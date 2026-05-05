@@ -1,0 +1,3416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="The Fast Life" />
+<meta name="theme-color" content="#ffffff" />
+<title>The Fast Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,400;9..144,0,500;9..144,0,600;9..144,1,300;9..144,1,400;9..144,1,500;9..144,1,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root {
+    --bg-page: #ffffff;
+    --bg-card: #faf6f1;
+    --bg-card-deep: #f3ece2;
+    --bg-stage: #f5f3f0;
+
+    --ink: #3d1d36;
+    --ink-soft: #7a5168;
+    --ink-faint: #b8a3ae;
+    --line: rgba(61, 29, 54, 0.08);
+    --line-strong: rgba(61, 29, 54, 0.14);
+
+    --gold: #c9a961;
+    --gold-soft: #e0c98a;
+    --rose: #d49aa6;
+    --rose-soft: #e8c4cd;
+    --aub-deep: #5b2547;
+
+    --green: #7a9a6e;
+    --green-soft: #d8e3d2;
+    --warn: #c0392b;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg-page);
+    font-family: 'Fraunces', Georgia, serif;
+    color: var(--ink);
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { min-height: 100vh; min-height: 100dvh; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── App container ─── */
+  .app {
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg-page);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(80px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+    position: relative;
+  }
+
+  /* ─── Top bar ─── */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 12px;
+  }
+  .top-bar-greeting {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .greeting-name {
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .greeting-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .icon-btn:active { background: var(--bg-card-deep); }
+
+  /* ─── Mode chip ─── */
+  .mode-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--bg-card-deep);
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 20px 16px;
+  }
+  .mode-chip-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* ─── Body content area ─── */
+  .body-content {
+    padding: 0 20px;
+  }
+
+  /* ─── Section headers ─── */
+  .h-section {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 24px 0 10px 0;
+    font-weight: 500;
+  }
+  .h-section:first-child { margin-top: 0; }
+
+  /* ─── Cards ─── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .card-stage {
+    background: linear-gradient(135deg, rgba(201, 169, 97, 0.05), rgba(212, 154, 166, 0.05));
+    border: 1px solid rgba(201, 169, 97, 0.18);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .card-action {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    cursor: pointer;
+  }
+
+  /* ─── Carrie line ─── */
+  .carrie-line {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ─── Form inputs ─── */
+  .field { margin-bottom: 18px; }
+  .field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 16px;
+    font-style: italic;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .input:focus {
+    border-color: var(--gold);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.08);
+  }
+
+  /* ─── Buttons ─── */
+  .btn {
+    background: var(--ink);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 16px 36px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 18px rgba(61, 29, 54, 0.18);
+    user-select: none;
+  }
+  .btn:active { background: var(--aub-deep); transform: translateY(1px); }
+  .btn-soft {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    box-shadow: none;
+  }
+  .btn-soft:active { background: var(--bg-card); }
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  /* ─── Pills / chips ─── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+  }
+  .chip.active {
+    background: linear-gradient(135deg, rgba(201,169,97,0.12), rgba(212,154,166,0.12));
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .chip-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* ─── Setup screen ─── */
+  .setup-screen {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 40px 24px env(safe-area-inset-bottom);
+    display: flex;
+    flex-direction: column;
+  }
+  .setup-mark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-align: center;
+    margin: 16px 0 4px;
+  }
+  .setup-title {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 32px;
+    color: var(--ink);
+    text-align: center;
+    margin: 0 0 6px;
+    letter-spacing: -0.015em;
+  }
+  .setup-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-align: center;
+    margin: 0 0 20px;
+  }
+  .setup-tagline {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-soft);
+    text-align: center;
+    margin: 0 0 32px;
+    line-height: 1.5;
+  }
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .step-dot {
+    width: 24px; height: 2px;
+    background: var(--line);
+    border-radius: 2px;
+  }
+  .step-dot.active { background: var(--gold); }
+  .step-dot.complete { background: var(--ink-soft); }
+
+  /* ─── Mode picker (for setup) ─── */
+  .mode-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-bottom: 8px;
+    user-select: none;
+  }
+  .mode-row.selected {
+    background: linear-gradient(135deg, rgba(201, 169, 97, 0.06), rgba(212, 154, 166, 0.06));
+    border-color: var(--gold);
+  }
+  .mode-radio {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-faint);
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+  .mode-checkbox {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--ink-faint);
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+  .mode-row.selected .mode-radio,
+  .mode-row.selected .mode-checkbox {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+  .mode-row.selected .mode-radio::after {
+    content: "";
+    position: absolute;
+    top: 4px; left: 4px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  .mode-row.selected .mode-checkbox::after {
+    content: "✓";
+    position: absolute;
+    top: 0; left: 4px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .mode-name {
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .mode-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+  .mode-content { flex: 1; min-width: 0; }
+
+  /* ─── Skip link ─── */
+  .skip-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    background: transparent;
+    border: none;
+    padding: 6px 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 0.5px;
+  }
+
+  /* ─── Footer area ─── */
+  .footer-area {
+    margin-top: auto;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ─── Timer ring ─── */
+  .ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0 24px;
+    position: relative;
+  }
+  .ring-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .ring-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .ring-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+  .ring-target {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+    margin-top: 8px;
+    cursor: pointer;
+  }
+  .ring-target:hover { text-decoration: underline; }
+
+  /* ─── Drinks log tiles ─── */
+  .log-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .log-tile {
+    aspect-ratio: 1;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 4px;
+    position: relative;
+    user-select: none;
+  }
+  .log-tile:active { background: var(--bg-card); border-color: var(--gold); }
+  .log-tile-symbol {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .log-tile-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.5px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    text-align: center;
+    line-height: 1.2;
+  }
+  .log-tile-count {
+    position: absolute;
+    top: -4px; right: -4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    background: var(--gold);
+    color: #fff;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  /* ─── Stage card ─── */
+  .stage-headline {
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+  }
+  .stage-carrie {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ─── Slim window timer (IF in IF+Keto mode) ─── */
+  .window-timer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, rgba(201,169,97,0.05), rgba(212,154,166,0.05));
+    border: 1px solid rgba(201,169,97,0.18);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  /* ─── Macros row ─── */
+  .macros-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .macro {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .macro-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .macro-value {
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .macro-target {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+
+  /* ─── Slider ─── */
+  .slider-row { margin-bottom: 14px; }
+  .slider-row:last-child { margin-bottom: 0; }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .slider-label-name {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .slider-label-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+  .slider-track {
+    display: flex;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .slider-pip {
+    flex: 1;
+    height: 8px;
+    background: var(--line);
+    border-radius: 3px;
+    transition: background 0.1s ease;
+  }
+  .slider-pip.filled {
+    background: linear-gradient(90deg, var(--gold), var(--rose));
+  }
+
+  /* ─── Supplement row ─── */
+  .supp-bucket { margin-bottom: 14px; }
+  .supp-bucket:last-child { margin-bottom: 0; }
+  .supp-bucket-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .supp-bucket-label .due-now { color: var(--gold); }
+  .supp-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+  }
+  .supp-row:active { background: var(--bg-card); }
+  .supp-row.taken {
+    background: var(--green-soft);
+    border-color: rgba(122, 154, 110, 0.3);
+  }
+  .supp-row.skipped { opacity: 0.5; }
+  .supp-check {
+    width: 22px; height: 22px;
+    border: 1.5px solid var(--ink-faint);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: transparent;
+  }
+  .supp-row.taken .supp-check {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .supp-row.skipped .supp-check {
+    background: var(--ink-faint);
+    border-color: var(--ink-faint);
+    color: #fff;
+  }
+  .supp-info { flex: 1; min-width: 0; }
+  .supp-name {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .supp-dose {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+  .supp-time-stamp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-faint);
+  }
+
+  /* ─── Activity row ─── */
+  .activity-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+  .activity-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  .activity-name {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .activity-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+  .activity-cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 3px 10px;
+    background: var(--bg-card-deep);
+    border-radius: 999px;
+  }
+  .activity-cat.strength { color: var(--aub-deep); background: rgba(91, 37, 71, 0.08); }
+  .activity-cat.movement { color: #5a7c52; background: rgba(122, 154, 110, 0.12); }
+  .activity-cat.cardio { color: #b66a4a; background: rgba(212, 124, 79, 0.1); }
+  .activity-cat.wellness { color: var(--gold); background: rgba(201, 169, 97, 0.1); }
+
+  /* ─── Cycle marker ─── */
+  .cycle-marker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--rose);
+    text-transform: uppercase;
+  }
+  .cycle-marker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--rose);
+  }
+
+  /* ─── Modal / sheet ─── */
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(61, 29, 54, 0.4);
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .sheet {
+    background: var(--bg-page);
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    border-radius: 24px 24px 0 0;
+    padding: 16px 20px env(safe-area-inset-bottom);
+    overflow-y: auto;
+    animation: slideUp 0.25s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: var(--line-strong);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .sheet-title {
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 0 4px;
+  }
+  .sheet-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+  }
+
+  /* ─── Bottom nav ─── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    max-width: 480px;
+    margin: 0 auto;
+    z-index: 40;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 8px;
+    cursor: pointer;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.15s ease;
+    user-select: none;
+    flex: 1;
+  }
+  .nav-item.active { color: var(--ink); }
+  .nav-item.active .nav-icon { color: var(--gold); }
+  .nav-icon {
+    font-size: 20px;
+    line-height: 1;
+    color: var(--ink-faint);
+    transition: color 0.15s ease;
+  }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-style: italic;
+    font-size: 14px;
+    box-shadow: 0 10px 30px rgba(61, 29, 54, 0.3);
+    z-index: 100;
+    max-width: 90%;
+    text-align: center;
+    animation: toastIn 0.3s ease-out;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  /* ─── Settings rows ─── */
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    user-select: none;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label {
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .settings-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+  .settings-arrow {
+    color: var(--ink-faint);
+    margin-left: 8px;
+  }
+
+  /* ─── Bloodwork table ─── */
+  .bw-table { width: 100%; border-collapse: collapse; }
+  .bw-table th {
+    background: var(--bg-card-deep);
+    padding: 8px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-align: right;
+    font-weight: 500;
+  }
+  .bw-table th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+  .bw-table th:last-child { border-radius: 0 8px 0 0; }
+  .bw-table td {
+    padding: 8px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+    background: #fff;
+  }
+  .bw-table td:first-child {
+    text-align: left;
+    font-style: italic;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .bw-cell-high { color: var(--warn); font-weight: 500; }
+  .bw-cell-low { color: var(--warn); }
+  .bw-cell-good { color: var(--green); }
+  .bw-cell-empty { color: var(--ink-faint); }
+  .bw-section-row td {
+    background: rgba(201, 169, 97, 0.05);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* ─── Photo grid ─── */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .photo-tile {
+    aspect-ratio: 3/4;
+    background: var(--bg-card-deep);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+  }
+  .photo-tile.current {
+    background: linear-gradient(135deg, rgba(201,169,97,0.12), rgba(212,154,166,0.12));
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ─── Helper utilities ─── */
+  .hidden { display: none; }
+  .text-center { text-align: center; }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .col { display: flex; flex-direction: column; }
+  .grow { flex: 1; }
+
+  /* ─── Empty / placeholder ─── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state-line {
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ═══════════════════════════════════════════════════════════════
+// CONSTANTS & HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+const STORAGE_KEY = "the-fast-life-v3";
+
+// Pre-loaded Priyanka context
+const DEFAULT_PROFILE = {
+  name: "Priyanka",
+  sex: "female",
+  dob: "1980-10-06",
+  height: 163, // cm
+  modes: ["if", "keto"], // multi-select
+  defaultFastHours: 16,
+  macroTargets: { carbs: 30, protein: 90, fat: 90 },
+  cycleLength: 28,
+  setupCompletedAt: null
+};
+
+// Default drinks list (editable)
+const DEFAULT_DRINKS = [
+  { id: "water", symbol: "◌", label: "water" },
+  { id: "salt", symbol: "⚡", label: "+ salt" },
+  { id: "coffee", symbol: "☕", label: "coffee" },
+  { id: "lime", symbol: "🍋", label: "+ lime" },
+  { id: "tea", symbol: "🍵", label: "tea" }
+];
+
+// Default supplement stack (the full premium stack we designed)
+const DEFAULT_SUPPLEMENTS = [
+  // Bucket 1 — On waking (6:30 AM)
+  { id: "thyroxine", name: "Thyroxine", dose: "as prescribed", bucket: "waking", time: "06:30", critical: true },
+  { id: "salt-water", name: "Sea salt water", dose: "1g pinch in 250ml", bucket: "waking", time: "06:30" },
+  // Bucket 2 — Morning (7:30 AM, after thyroxine wait)
+  { id: "iron", name: "Iron + Vitamin C", dose: "25mg + 250mg", bucket: "morning", time: "07:30", warning: "4+ hours from thyroxine, magnesium" },
+  // Bucket 3 — Mid-morning (8:30 AM, with coffee)
+  { id: "ltheanine", name: "L-Theanine", dose: "200mg", bucket: "midmorning", time: "08:30" },
+  // Bucket 4 — Lunch (12:00)
+  { id: "d3k2", name: "Vitamin D3 + K2", dose: "4000 IU + 200 mcg", bucket: "lunch", time: "12:00" },
+  { id: "omega3", name: "Omega-3", dose: "2-3g EPA+DHA", bucket: "lunch", time: "12:00" },
+  { id: "bcomplex", name: "Methylated B-Complex", dose: "1 capsule", bucket: "lunch", time: "12:00" },
+  { id: "astaxanthin", name: "Astaxanthin", dose: "12mg", bucket: "lunch", time: "12:00" },
+  { id: "collagen", name: "Marine Collagen", dose: "15g", bucket: "lunch", time: "12:00" },
+  { id: "quercetin", name: "Quercetin + Bromelain", dose: "500mg + 250mg", bucket: "lunch", time: "12:00" },
+  { id: "brazilnuts", name: "Brazil nuts", dose: "2-3 nuts", bucket: "lunch", time: "12:00" },
+  { id: "whey", name: "Whey isolate", dose: "20-25g", bucket: "lunch", time: "12:00" },
+  // Bucket 5 — Afternoon (3:00 PM)
+  { id: "inositol", name: "Inositol", dose: "4g myo + 100mg D-chiro", bucket: "afternoon", time: "15:00" },
+  { id: "creatine", name: "Creatine", dose: "5g", bucket: "afternoon", time: "15:00" },
+  { id: "lmnt", name: "LMNT electrolyte", dose: "1 packet", bucket: "afternoon", time: "15:00" },
+  { id: "boron", name: "Boron", dose: "3-6mg", bucket: "afternoon", time: "15:00" },
+  // Bucket 6 — Dinner (6:00 PM)
+  { id: "ala", name: "ALA", dose: "600mg", bucket: "dinner", time: "18:00" },
+  { id: "coq10", name: "CoQ10 Ubiquinol", dose: "100mg", bucket: "dinner", time: "18:00" },
+  { id: "curcumin", name: "Curcumin (Meriva)", dose: "500mg", bucket: "dinner", time: "18:00" },
+  // Bucket 7 — After dinner (8:00 PM)
+  { id: "probiotic", name: "Probiotic", dose: "50 billion CFU", bucket: "evening", time: "20:00" },
+  { id: "natto", name: "Nattokinase", dose: "2000 FU", bucket: "evening", time: "20:00" },
+  // Bucket 8 — Before bed (10:00 PM)
+  { id: "magnesium", name: "Magnesium glycinate", dose: "400mg", bucket: "night", time: "22:00" },
+  { id: "glycine-nac", name: "Glycine + NAC", dose: "3g + 600mg", bucket: "night", time: "22:00" },
+  { id: "apigenin", name: "Apigenin", dose: "50mg", bucket: "night", time: "22:00" }
+];
+
+// Cycled supplements (3x/week)
+const DEFAULT_CYCLED = [
+  { id: "nr", name: "NR (Niagen)", dose: "500mg", days: ["Mon", "Wed", "Fri"] },
+  { id: "resv", name: "Trans-Resveratrol", dose: "500mg", days: ["Mon", "Wed", "Fri"] },
+  { id: "spermidine", name: "Spermidine", dose: "1mg", days: ["Mon", "Wed", "Fri"] }
+];
+
+// Activity categories (editable, but spine is fixed)
+const ACTIVITY_CATEGORIES = [
+  { id: "strength", label: "Strength", color: "strength" },
+  { id: "movement", label: "Movement", color: "movement" },
+  { id: "cardio", label: "Cardio", color: "cardio" },
+  { id: "wellness", label: "Wellness", color: "wellness" },
+  { id: "other", label: "Other", color: "" }
+];
+
+// Bucket labels
+const BUCKET_LABELS = {
+  waking: { label: "On waking", time: "6:30 AM" },
+  morning: { label: "Morning", time: "7:30 AM" },
+  midmorning: { label: "Mid-morning", time: "with coffee" },
+  lunch: { label: "Lunch", time: "12:00 PM" },
+  afternoon: { label: "Afternoon", time: "3:00 PM" },
+  dinner: { label: "Dinner", time: "6:00 PM" },
+  evening: { label: "After dinner", time: "8:00 PM" },
+  night: { label: "Before bed", time: "10:00 PM" }
+};
+
+// Default meal plan
+const MEAL_PLAN = {
+  Mon: { lunch: "Scrambled eggs + spinach + avocado", dinner: "Grilled salmon + broccoli & beans" },
+  Tue: { lunch: "Egg shakshuka with peppers", dinner: "Pan-seared sea bass + asparagus" },
+  Wed: { lunch: "Mushroom omelette + avocado", dinner: "Grilled salmon (mustard-dill) + greens" },
+  Thu: { lunch: "Egg bhurji + cucumber", dinner: "Pan-seared sea bass + zucchini" },
+  Fri: { lunch: "Saag eggs + cheese", dinner: "Grilled salmon + broccoli" },
+  Sat: { lunch: "Smoked salmon + scrambled eggs + avocado", dinner: "Light tofu stir-fry or eggs" },
+  Sun: { lunch: "Eggs any way + mushrooms + cheese", dinner: "Pan-seared sea bass + greens" }
+};
+
+// 36 fasting stages
+const FAST_STAGES = [
+  { hour: 0, headline: "And so we begin", carrie: "Couldn't help but wonder — what does my body do when I stop feeding it?" },
+  { hour: 2, headline: "Glucose, draining", carrie: "Last meal's fuel is being used up. Insulin's already dropping. The body's listening." },
+  { hour: 4, headline: "The first whisper", carrie: "Glycogen breakdown begins. Liver is loosening its grip on stored sugar." },
+  { hour: 6, headline: "Hunger arrives", carrie: "Ghrelin spikes — that's the hunger hormone, darling. It comes in waves. Ride them." },
+  { hour: 8, headline: "Glycogen-gone territory", carrie: "Liver glycogen running low. Body is starting to consider its other options." },
+  { hour: 10, headline: "Fat begins burning", carrie: "Lipolysis ramps up. Free fatty acids enter the bloodstream. Yes, this is what we wanted." },
+  { hour: 12, headline: "Insulin floor", carrie: "Insulin is at baseline. Growth hormone is climbing. The metabolic dance has shifted." },
+  { hour: 14, headline: "Mild ketosis", carrie: "Ketones, just appearing. The brain is taking its first taste of an alternative fuel." },
+  { hour: 16, headline: "The 16-hour line", carrie: "Most people stop here. But you're not most people, are you?" },
+  { hour: 18, headline: "Autophagy stirs", carrie: "Cellular cleanup begins. Old proteins, damaged cells, getting recycled. The body is tidying up." },
+  { hour: 20, headline: "Ketones, rising", carrie: "Blood ketones meaningful now. The brain prefers them when they're available." },
+  { hour: 22, headline: "Metabolic momentum", carrie: "You're hitting the stretch where it gets easier, not harder. The body has adapted." },
+  { hour: 24, headline: "One full day", carrie: "24 hours. HGH up 5x baseline. Insulin sensitivity sharpening. This is real territory." },
+  { hour: 26, headline: "Deep fat-burning", carrie: "Adipose tissue actively releasing stored fat. The body is genuinely consuming itself, in the best way." },
+  { hour: 28, headline: "Cortisol wave", carrie: "Stress hormone may rise to free more fuel. Some people feel it. Stay calm. Stay salted." },
+  { hour: 30, headline: "30-hour line", carrie: "You've passed where most extended fasts begin. Now the deep work starts." },
+  { hour: 32, headline: "Autophagy, accelerating", carrie: "The cellular cleanup is in full swing. This is the part nobody can see, but it matters." },
+  { hour: 36, headline: "The 36-hour mark", carrie: "You've crossed into a place most people only read about. Solid ketosis. Deep autophagy. Whole-body conversation." },
+  { hour: 40, headline: "Stem cell signaling", carrie: "Old immune cells get recycled, new ones queued. The body is genuinely renewing." },
+  { hour: 44, headline: "Mental clarity (for some)", carrie: "Some report sharp focus around now. Brain on ketones can feel clean. Some report fatigue. Both are normal." },
+  { hour: 48, headline: "Two days in", carrie: "48 hours. The plateau-breaker line. Insulin at lows, HGH high, autophagy peak. The metabolic reset is real." },
+  { hour: 52, headline: "Adipose dominance", carrie: "Body is now running primarily on its own fat stores. The shift is complete." },
+  { hour: 56, headline: "BDNF rising", carrie: "Brain-derived neurotrophic factor — neuroprotection — climbs in extended fasts. Fed brain on ketones." },
+  { hour: 60, headline: "Hour 60", carrie: "Deep zone. HGH may be 10x baseline. Inflammation markers dropping. This is the work." },
+  { hour: 64, headline: "Sleep may shift", carrie: "Some find sleep gets lighter past day 2. Magnesium tonight. Salt water if you wake. Be gentle." },
+  { hour: 68, headline: "Mental fortitude", carrie: "Past this point, the work is more mental than physical. The body is fine. The mind is being tested." },
+  { hour: 72, headline: "Three days", carrie: "72 hours. Stem cell renewal in full motion. Some claim enhanced clarity. Some claim everything tastes different on refeed. Both happen." },
+  { hour: 76, headline: "Salt becomes everything", carrie: "Electrolyte demand increases. Listen to your body. More salt. More magnesium. More potassium." },
+  { hour: 80, headline: "Approaching the line", carrie: "If 84 is your target, you're in the home stretch. Hold steady." },
+  { hour: 84, headline: "84-hour mark", carrie: "Hour 84. The strategic mark. You can break here cleanly, or push to 96 if everything feels right." },
+  { hour: 88, headline: "Beyond strategic", carrie: "Past 84 is genuinely deep territory. Most benefit gained. Most reasonable stopping points behind us." },
+  { hour: 92, headline: "Approaching 96", carrie: "Recovery cost rising past this point. Be honest with yourself about why you're still going." },
+  { hour: 96, headline: "Four days", carrie: "96 hours. Deep autophagy plateau. Pushing past requires real medical reason or genuine commitment." },
+  { hour: 104, headline: "Past the threshold", carrie: "Beyond 96 hours, refeed becomes a longer protocol. Plan it carefully." },
+  { hour: 112, headline: "Five days territory", carrie: "Approaching 5-day mark. This is where extended fasts genuinely become medically supervised territory." },
+  { hour: 120, headline: "Five days", carrie: "120 hours. The classical extended fast. Whatever you came for, you've done." }
+];
+
+// ─── Helpers ───────────────────────────────────────────────
+const todayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
+const dayOfWeek = (date = new Date()) => ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][date.getDay()];
+
+const formatTime = (date) => {
+  const h = date.getHours();
+  const m = date.getMinutes();
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+};
+
+const formatDate = (date) => {
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[date.getMonth()]} ${date.getDate()}`;
+};
+
+const getCurrentStage = (hours) => {
+  let stage = FAST_STAGES[0];
+  for (const s of FAST_STAGES) {
+    if (s.hour <= hours) stage = s;
+    else break;
+  }
+  return stage;
+};
+
+const getCyclePhase = (lastPeriodDate, cycleLength = 28) => {
+  if (!lastPeriodDate) return null;
+  const last = new Date(lastPeriodDate);
+  const today = new Date();
+  const days = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+  const cycleDay = (days % cycleLength) + 1;
+  let phase = "";
+  if (cycleDay <= 5) phase = "menstrual";
+  else if (cycleDay <= 13) phase = "follicular";
+  else if (cycleDay <= 16) phase = "ovulation";
+  else if (cycleDay <= 24) phase = "luteal";
+  else phase = "late luteal";
+  return { day: cycleDay, phase };
+};
+
+const greeting = (name) => {
+  const h = new Date().getHours();
+  let greet = "Hello";
+  if (h < 5) greet = "Late night";
+  else if (h < 12) greet = "Morning";
+  else if (h < 17) greet = "Hello";
+  else greet = "Evening";
+  return name ? `${greet}, ${name}` : greet;
+};
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════════════════════════════
+
+function App() {
+  const [data, setData] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+  const [now, setNow] = useState(Date.now());
+  const [activeTab, setActiveTab] = useState("home");
+  const [sheet, setSheet] = useState(null);
+  const [toast, setToast] = useState(null);
+  const tickRef = useRef(null);
+
+  // Load data
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        setData(JSON.parse(raw));
+      } else {
+        // Pre-loaded with Priyanka's context
+        // Active fast: Sun May 3 8:30pm IST → target 84h (ends Thu May 7 8:30am)
+        const fastStart = new Date("2026-05-03T20:30:00+05:30").getTime();
+        setData({
+          profile: {
+            name: "Priyanka",
+            sex: "female",
+            dob: "1980-10-06",
+            height: 163,
+            modes: ["extended", "if", "keto"], // currently fasting + IF/Keto thereafter
+            defaultFastHours: 16,
+            macroTargets: { carbs: 30, protein: 90, fat: 90 },
+            cycleLength: 28,
+            lastPeriodDate: "2026-05-05",
+            setupCompletedAt: Date.now()
+          },
+          activeFast: {
+            id: fastStart,
+            startedAt: fastStart,
+            goalHours: 84,
+            endedAt: null
+          },
+          fastHistory: [],
+          drinks: DEFAULT_DRINKS,
+          drinkLogs: [],
+          supplements: DEFAULT_SUPPLEMENTS,
+          cycledSupplements: DEFAULT_CYCLED,
+          supplementLogs: {},
+          activities: [],
+          checkins: {},
+          measurements: [],
+          photos: [],
+          dexa: [],
+          bloodwork: PRELOADED_BLOODWORK,
+          periods: [{ start: "2026-05-05" }],
+          meals: {}
+        });
+      }
+    } catch (e) {
+      console.error("Failed to load:", e);
+    }
+    setLoaded(true);
+  }, []);
+
+  // Save data
+  useEffect(() => {
+    if (!loaded || !data) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      showToast("Storage full — export your data soon.");
+    }
+  }, [data, loaded]);
+
+  // Tick for timer
+  useEffect(() => {
+    tickRef.current = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(tickRef.current);
+  }, []);
+
+  // Toast helper
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  if (!loaded || !data) {
+    return <div style={{minHeight:"100vh", background:"var(--bg-page)"}} />;
+  }
+
+  // Setup gate — no profile yet
+  if (!data.profile) {
+    return <SetupFlow onComplete={(profile) => setData({ ...data, profile: { ...profile, setupCompletedAt: Date.now() } })} />;
+  }
+
+  // Routing
+  const props = { data, setData, now, setSheet, showToast, sheet, setActiveTab };
+
+  return (
+    <div className="app">
+      {activeTab === "home" && <HomeScreen {...props} />}
+      {activeTab === "supps" && <SupplementsScreen {...props} />}
+      {activeTab === "diet" && <DietScreen {...props} />}
+      {activeTab === "body" && <BodyScreen {...props} />}
+      {activeTab === "more" && <MoreScreen {...props} />}
+
+      {/* Bottom nav */}
+      <nav className="bottom-nav">
+        <NavItem id="home" label="Home" icon="◐" active={activeTab === "home"} onClick={() => setActiveTab("home")} />
+        <NavItem id="supps" label="Supps" icon="◌" active={activeTab === "supps"} onClick={() => setActiveTab("supps")} />
+        <NavItem id="diet" label="Diet" icon="◇" active={activeTab === "diet"} onClick={() => setActiveTab("diet")} />
+        <NavItem id="body" label="Body" icon="◈" active={activeTab === "body"} onClick={() => setActiveTab("body")} />
+        <NavItem id="more" label="More" icon="⋯" active={activeTab === "more"} onClick={() => setActiveTab("more")} />
+      </nav>
+
+      {/* Sheet (modal) */}
+      {sheet && (
+        <Sheet onClose={() => setSheet(null)}>
+          <SheetContent
+            sheet={sheet}
+            data={data}
+            setData={setData}
+            setSheet={setSheet}
+            showToast={showToast}
+            setActiveTab={setActiveTab}
+          />
+        </Sheet>
+      )}
+
+      {/* Toast */}
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+// Pre-loaded bloodwork from Jan 2025
+const PRELOADED_BLOODWORK = [
+  {
+    date: "2025-01-24",
+    label: "Jan '25",
+    panel: {
+      thyroid: { tsh: 20.0, ft3: 1.80, ft4: 0.78 },
+      lipids: { ldl: 205, hdl: 56.7, triglycerides: 146, totalCholesterol: 276, apoB: 142, lpa: 65.5 },
+      metabolic: { glucose: 92, hba1c: 5.4, insulin: null },
+      vitamins: { d: 25.2, b12: 327, folate: 3.7, ferritin: 24.2 },
+      inflammation: { hsCRP: 0.18, ige: 379 }
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════
+// SETUP FLOW
+// ═══════════════════════════════════════════════════════════════
+
+function SetupFlow({ onComplete }) {
+  const [step, setStep] = useState(0);
+  const [profile, setProfile] = useState(DEFAULT_PROFILE);
+
+  const update = (k, v) => setProfile({ ...profile, [k]: v });
+  const updateMacro = (k, v) => setProfile({ ...profile, macroTargets: { ...profile.macroTargets, [k]: v }});
+
+  // Welcome
+  if (step === 0) {
+    return (
+      <div className="setup-screen">
+        <div style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center'}}>
+          <div className="setup-mark">◐ ◌ ◐</div>
+          <h1 className="setup-title">The Fast Life</h1>
+          <p className="setup-sub">Let's begin</p>
+          <p className="setup-tagline">A space for the work no one else sees you doing.</p>
+        </div>
+        <div className="footer-area">
+          <button className="btn" onClick={() => setStep(1)}>Begin</button>
+        </div>
+      </div>
+    );
+  }
+
+  // The basics
+  if (step === 1) {
+    const isFemale = profile.sex === "female";
+    return (
+      <div className="setup-screen">
+        <div className="steps">
+          <div className="step-dot complete" />
+          <div className="step-dot active" />
+          <div className="step-dot" />
+        </div>
+
+        <h2 className="h-section" style={{marginTop:0}}>The basics</h2>
+
+        <div className="field">
+          <div className="field-label">Name (required)</div>
+          <input className="input" value={profile.name} onChange={e => update("name", e.target.value)} placeholder="Your name" />
+        </div>
+
+        <div className="field">
+          <div className="field-label">Sex · for cycle + metabolic defaults</div>
+          <div style={{display:'flex', gap:6}}>
+            {["female", "male", "skip"].map(s => (
+              <div
+                key={s}
+                className={`mode-row ${profile.sex === s ? 'selected' : ''}`}
+                style={{flex:1, padding:'10px 12px', justifyContent:'center'}}
+                onClick={() => update("sex", s)}
+              >
+                <div className="mode-radio" />
+                <div className="mode-name" style={{fontSize:13, textTransform:'capitalize'}}>{s}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:18}}>
+          <div className="field" style={{margin:0}}>
+            <div className="field-label">Date of birth</div>
+            <input className="input" type="date" value={profile.dob} onChange={e => update("dob", e.target.value)} />
+          </div>
+          <div className="field" style={{margin:0}}>
+            <div className="field-label">Height (cm)</div>
+            <input className="input" type="number" value={profile.height} onChange={e => update("height", parseInt(e.target.value) || 0)} />
+          </div>
+        </div>
+
+        {isFemale && (
+          <div style={{borderTop:'1px solid var(--line)', paddingTop:18}}>
+            <h2 className="h-section" style={{marginTop:0}}>Cycle (optional)</h2>
+
+            <div className="field">
+              <div className="field-label">Last period start</div>
+              <input className="input" type="date" value={profile.lastPeriodDate || ""} onChange={e => update("lastPeriodDate", e.target.value)} />
+            </div>
+
+            <div className="field">
+              <div className="field-label">Typical cycle length</div>
+              <div className="chip-row">
+                {[24, 28, 32, 0].map(len => (
+                  <div
+                    key={len}
+                    className={`chip ${profile.cycleLength === len ? 'active' : ''}`}
+                    onClick={() => update("cycleLength", len)}
+                  >
+                    {len === 0 ? "irregular" : len === 24 ? "21-25" : len === 28 ? "26-30" : "31-35"}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="footer-area">
+          <button className="btn" disabled={!profile.name} onClick={() => setStep(2)}>Continue</button>
+        </div>
+      </div>
+    );
+  }
+
+  // Protocol
+  if (step === 2) {
+    const toggleMode = (m) => {
+      const exists = profile.modes.includes(m);
+      const newModes = exists ? profile.modes.filter(x => x !== m) : [...profile.modes, m];
+      update("modes", newModes);
+    };
+
+    return (
+      <div className="setup-screen">
+        <div className="steps">
+          <div className="step-dot complete" />
+          <div className="step-dot complete" />
+          <div className="step-dot active" />
+        </div>
+
+        <h2 className="h-section" style={{marginTop:0}}>How you'll use this</h2>
+
+        <div className="field">
+          <div className="field-label">Modes · pick what applies</div>
+          {[
+            { id: "extended", name: "Extended Fast", desc: "24h+ water fasts, full stages" },
+            { id: "if", name: "Intermittent Fasting", desc: "Daily eating windows" },
+            { id: "keto", name: "Keto", desc: "Meals + macros" },
+            { id: "other", name: "Other", desc: "General tracking" }
+          ].map(m => (
+            <div
+              key={m.id}
+              className={`mode-row ${profile.modes.includes(m.id) ? 'selected' : ''}`}
+              onClick={() => toggleMode(m.id)}
+            >
+              <div className="mode-checkbox" />
+              <div className="mode-content">
+                <div className="mode-name">{m.name}</div>
+                <div className="mode-desc">{m.desc}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{fontFamily:"'JetBrains Mono', monospace", fontSize:9.5, color:"var(--ink-faint)", marginTop:8, fontStyle:'italic'}}>
+            Pick what applies. Edit anytime in Settings.
+          </div>
+        </div>
+
+        <h2 className="h-section">Your defaults</h2>
+
+        <div className="field">
+          <div className="field-label">Default fast goal (hours)</div>
+          <input className="input" type="number" value={profile.defaultFastHours} onChange={e => update("defaultFastHours", parseInt(e.target.value) || 16)} />
+        </div>
+
+        <div className="field">
+          <div className="field-label">Macro targets · keto mode</div>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:6}}>
+            {["carbs", "protein", "fat"].map(m => (
+              <div key={m}>
+                <div className="mono" style={{fontSize:8.5, letterSpacing:'0.16em', color:'var(--ink-soft)', marginBottom:4, textTransform:'uppercase'}}>{m}</div>
+                <input
+                  className="input"
+                  type="number"
+                  value={profile.macroTargets[m]}
+                  onChange={e => updateMacro(m, parseInt(e.target.value) || 0)}
+                  style={{padding:'10px 12px', fontSize:14}}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="footer-area">
+          <button className="btn" disabled={profile.modes.length === 0} onClick={() => onComplete(profile)}>Begin</button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HOME SCREEN
+// ═══════════════════════════════════════════════════════════════
+
+function HomeScreen({ data, setData, now, setSheet, showToast, setActiveTab }) {
+  const { profile, activeFast, drinks, drinkLogs } = data;
+  const modes = profile.modes;
+  const isExtended = modes.includes("extended");
+  const isIF = modes.includes("if");
+  const isKeto = modes.includes("keto");
+  const isOther = modes.includes("other");
+
+  const cycle = profile.lastPeriodDate ? getCyclePhase(profile.lastPeriodDate, profile.cycleLength || 28) : null;
+
+  // Today's drink count
+  const today = todayKey();
+  const todayDrinks = drinkLogs.filter(d => d.date === today);
+  const drinkCounts = {};
+  todayDrinks.forEach(d => { drinkCounts[d.drinkId] = (drinkCounts[d.drinkId] || 0) + 1; });
+
+  // Today's check-in
+  const todaysCheckin = data.checkins[today];
+
+  // Today's meals from plan
+  const todayDow = dayOfWeek();
+  const todayMeals = MEAL_PLAN[todayDow];
+
+  // Today's macros (from logged meals)
+  const todayMealLogs = data.meals[today] || [];
+  const macros = todayMealLogs.reduce((acc, m) => ({
+    carbs: acc.carbs + (m.carbs || 0),
+    protein: acc.protein + (m.protein || 0),
+    fat: acc.fat + (m.fat || 0)
+  }), { carbs: 0, protein: 0, fat: 0 });
+
+  // Supplements today
+  const suppLogs = data.supplementLogs[today] || {};
+  const totalSupps = data.supplements.length;
+  const takenSupps = Object.values(suppLogs).filter(s => s.status === "taken").length;
+
+  const logDrink = (drinkId) => {
+    const newLog = { date: today, ts: Date.now(), drinkId };
+    setData({ ...data, drinkLogs: [...drinkLogs, newLog] });
+  };
+
+  const startFast = (hours) => {
+    const newFast = {
+      id: Date.now(),
+      startedAt: Date.now(),
+      goalHours: hours,
+      endedAt: null
+    };
+    setData({ ...data, activeFast: newFast });
+    showToast(`Fast begun, ${profile.name}.`);
+  };
+
+  const endFast = () => {
+    const completed = { ...activeFast, endedAt: Date.now() };
+    setData({ ...data, activeFast: null, fastHistory: [...data.fastHistory, completed] });
+    showToast("Fast complete. Be gentle with the refeed.");
+  };
+
+  // Calculate fast duration
+  let fastHours = 0, fastProgress = 0, currentStage = null;
+  if (activeFast) {
+    const elapsed = (now - activeFast.startedAt) / 1000 / 60 / 60;
+    fastHours = elapsed;
+    fastProgress = Math.min(100, (elapsed / activeFast.goalHours) * 100);
+    currentStage = getCurrentStage(fastHours);
+  }
+
+  return (
+    <>
+      {/* Top bar */}
+      <div className="top-bar">
+        <div className="top-bar-greeting">
+          <div className="greeting-name">{greeting(profile.name)}</div>
+          <div className="greeting-meta">{formatDate(new Date()).toUpperCase()} · {todayDow.toUpperCase()}</div>
+        </div>
+        <div className="icon-btn" onClick={() => setSheet({ type: "settings" })}>⚙</div>
+      </div>
+
+      {/* Mode chip */}
+      <div className="mode-chip">
+        <span className="mode-chip-dot" />
+        {modes.includes("extended") && activeFast ? "Extended Fast" :
+         modes.length > 1 ? modes.map(m => m === "if" ? "IF" : m === "keto" ? "Keto" : m === "extended" ? "Extended" : "Other").join(" + ") :
+         modes[0] === "if" ? "IF" : modes[0] === "keto" ? "Keto" : modes[0] === "extended" ? "Extended Fast" : "Other"}
+        {cycle && ` · day ${cycle.day}`}
+      </div>
+
+      <div className="body-content">
+        {/* Active fast — big ring */}
+        {activeFast && (
+          <>
+            <div className="ring-wrap">
+              <svg width="220" height="220" viewBox="0 0 220 220">
+                <defs>
+                  <linearGradient id="goldRose" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#c9a961"/>
+                    <stop offset="100%" stopColor="#d49aa6"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="110" cy="110" r="100" fill="none" stroke="var(--line)" strokeWidth="8"/>
+                <circle
+                  cx="110" cy="110" r="100"
+                  fill="none"
+                  stroke="url(#goldRose)"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 100}
+                  strokeDashoffset={2 * Math.PI * 100 - (fastProgress / 100) * 2 * Math.PI * 100}
+                  transform="rotate(-90 110 110)"
+                />
+              </svg>
+              <div className="ring-text">
+                <div className="ring-time">{Math.floor(fastHours)}:{String(Math.floor((fastHours % 1) * 60)).padStart(2, '0')}</div>
+                <div className="ring-label">Hours fasted</div>
+                <div className="ring-target" onClick={() => setSheet({ type: "editFast", fast: activeFast })}>
+                  → {activeFast.goalHours}h target
+                </div>
+              </div>
+            </div>
+
+            {/* Stage card */}
+            {currentStage && (
+              <div className="card card-stage">
+                <h3 className="stage-headline">{currentStage.headline}</h3>
+                <p className="stage-carrie">{currentStage.carrie}</p>
+              </div>
+            )}
+
+            <div className="btn-row">
+              <button className="btn btn-soft" onClick={() => setSheet({ type: "stages" })}>View timeline</button>
+              <button className="btn" onClick={() => setSheet({ type: "endFast", onConfirm: endFast })}>Break fast</button>
+            </div>
+          </>
+        )}
+
+        {/* No active fast — start a fast or show window timer */}
+        {!activeFast && isExtended && (
+          <div className="card card-stage" style={{textAlign:'center', padding:'24px 18px'}}>
+            <h3 style={{fontStyle:'italic', fontSize:18, color:'var(--ink)', margin:'0 0 8px'}}>Ready to begin?</h3>
+            <p className="carrie-line" style={{margin:'0 0 16px'}}>Tap below to start a fast, darling.</p>
+            <button className="btn" onClick={() => setSheet({ type: "startFast", onStart: startFast, defaultHours: profile.defaultFastHours })}>Start fast</button>
+          </div>
+        )}
+
+        {/* IF + Keto stacked: weight + cycle, macros, supps preview, check-in preview */}
+        {(isIF || isKeto) && !activeFast && (
+          <>
+            {/* Today's weight + cycle */}
+            {todaysCheckin?.weight && (
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6}}>
+                <div style={{fontStyle:'italic', fontSize:22, color:'var(--ink)'}}>
+                  {todaysCheckin.weight} <span className="mono" style={{fontSize:11, color:'var(--ink-soft)', letterSpacing:'0.15em'}}>KG</span>
+                </div>
+                {cycle && (
+                  <div className="cycle-marker">
+                    <span className="cycle-marker-dot" />
+                    Day {cycle.day} · {cycle.phase}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Macros */}
+            {isKeto && (
+              <div className="card">
+                <div className="card-header">
+                  <div className="card-title">Today · macros</div>
+                  <div className="card-action" onClick={() => setSheet({ type: "logMeal" })}>log meal</div>
+                </div>
+                <div className="macros-row">
+                  {["carbs", "protein", "fat"].map(m => (
+                    <div key={m} className="macro">
+                      <div className="macro-name">{m}</div>
+                      <div className="macro-value">{macros[m]}</div>
+                      <div className="macro-target">/ {profile.macroTargets[m]}g</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Drinks */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Drinks · today</div>
+            <div className="card-action" onClick={() => setSheet({ type: "editDrinks" })}>edit</div>
+          </div>
+          <div className="log-grid">
+            {drinks.map(d => (
+              <div key={d.id} className="log-tile" onClick={() => logDrink(d.id)}>
+                {drinkCounts[d.id] > 0 && <div className="log-tile-count">{drinkCounts[d.id]}</div>}
+                <div className="log-tile-symbol">{d.symbol}</div>
+                <div className="log-tile-label">{d.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Supplements summary */}
+        <div className="card" onClick={() => setActiveTab("supps")} style={{cursor:'pointer'}}>
+          <div className="card-header">
+            <div className="card-title">Supplements · {takenSupps} of {totalSupps}</div>
+            <div className="card-action">view all ›</div>
+          </div>
+          <div style={{fontStyle:'italic', fontSize:13, color:'var(--ink-soft)', lineHeight:1.5}}>
+            {takenSupps === totalSupps ? "Stack complete for today, beautifully done." :
+             takenSupps === 0 ? "Stack ready when you are." :
+             `${totalSupps - takenSupps} items pending.`}
+          </div>
+        </div>
+
+        {/* Daily check-in summary */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">{todaysCheckin ? "Today's check-in" : "Daily check-in"}</div>
+            <div className="card-action" onClick={() => setSheet({ type: "checkin" })}>{todaysCheckin ? "edit" : "add"}</div>
+          </div>
+          {todaysCheckin ? (
+            <div style={{fontStyle:'italic', fontSize:13, color:'var(--ink-soft)', lineHeight:1.5}}>
+              Weight {todaysCheckin.weight} · Sleep {todaysCheckin.sliders?.sleep || "—"}/10 · Energy {todaysCheckin.sliders?.energy || "—"}/10
+            </div>
+          ) : (
+            <div style={{fontStyle:'italic', fontSize:13, color:'var(--ink-soft)', lineHeight:1.5}}>
+              How was today? Tap to log.
+            </div>
+          )}
+        </div>
+
+        {/* Today's meals (Keto mode) */}
+        {isKeto && todayMeals && (
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Today's meals · {todayDow}</div>
+              <div className="card-action" onClick={() => setActiveTab("diet")}>view ›</div>
+            </div>
+            <div style={{padding:'6px 0', borderBottom:'1px solid var(--line)'}}>
+              <div className="mono" style={{fontSize:9, letterSpacing:'0.18em', color:'var(--ink-soft)', textTransform:'uppercase', marginBottom:2}}>Lunch</div>
+              <div style={{fontStyle:'italic', fontSize:14, color:'var(--ink)'}}>{todayMeals.lunch}</div>
+            </div>
+            <div style={{padding:'6px 0'}}>
+              <div className="mono" style={{fontSize:9, letterSpacing:'0.18em', color:'var(--ink-soft)', textTransform:'uppercase', marginBottom:2}}>Dinner</div>
+              <div style={{fontStyle:'italic', fontSize:14, color:'var(--ink)'}}>{todayMeals.dinner}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SUPPLEMENTS SCREEN
+// ═══════════════════════════════════════════════════════════════
+
+function SupplementsScreen({ data, setData, setSheet, showToast }) {
+  const today = todayKey();
+  const todayDow = dayOfWeek();
+  const todayLogs = data.supplementLogs[today] || {};
+
+  const isCycledDay = ["Mon","Wed","Fri"].includes(todayDow);
+  const totalToday = data.supplements.length + (isCycledDay ? data.cycledSupplements.length : 0);
+  const takenCount = Object.values(todayLogs).filter(s => s.status === "taken").length;
+
+  // Group supplements by bucket
+  const byBucket = {};
+  data.supplements.forEach(s => {
+    if (!byBucket[s.bucket]) byBucket[s.bucket] = [];
+    byBucket[s.bucket].push(s);
+  });
+
+  // Add cycled to "morning" bucket if today is M/W/F
+  const cycledForToday = isCycledDay ? data.cycledSupplements : [];
+
+  const toggleSupp = (suppId) => {
+    const current = todayLogs[suppId];
+    const newStatus = current?.status === "taken" ? null : "taken";
+    const newLogs = { ...todayLogs };
+    if (newStatus === null) {
+      delete newLogs[suppId];
+    } else {
+      newLogs[suppId] = {
+        status: "taken",
+        time: new Date().toTimeString().slice(0, 5)
+      };
+    }
+    setData({ ...data, supplementLogs: { ...data.supplementLogs, [today]: newLogs } });
+  };
+
+  // Identify "due now" bucket based on time
+  const currentHour = new Date().getHours();
+  const dueNowBucket =
+    currentHour < 7 ? "waking" :
+    currentHour < 8 ? "morning" :
+    currentHour < 11 ? "midmorning" :
+    currentHour < 14 ? "lunch" :
+    currentHour < 17 ? "afternoon" :
+    currentHour < 19 ? "dinner" :
+    currentHour < 21 ? "evening" :
+    "night";
+
+  return (
+    <>
+      <div className="top-bar">
+        <div className="top-bar-greeting">
+          <div className="greeting-name">Supplements</div>
+          <div className="greeting-meta">{takenCount} OF {totalToday} TODAY</div>
+        </div>
+        <div className="icon-btn" onClick={() => setSheet({ type: "editSupps" })}>⚙</div>
+      </div>
+
+      <div className="body-content">
+        {Object.keys(BUCKET_LABELS).map(bucket => {
+          const items = byBucket[bucket] || [];
+          const showCycled = bucket === "morning" && cycledForToday.length > 0;
+          if (items.length === 0 && !showCycled) return null;
+          const info = BUCKET_LABELS[bucket];
+          const isDueNow = bucket === dueNowBucket;
+
+          return (
+            <div key={bucket} className="supp-bucket">
+              <div className="supp-bucket-label">
+                <span>{info.label}</span>
+                <span className={isDueNow ? "due-now" : ""}>{isDueNow ? "due now" : info.time}</span>
+              </div>
+              {items.map(s => {
+                const log = todayLogs[s.id];
+                const isTaken = log?.status === "taken";
+                return (
+                  <div key={s.id} className={`supp-row ${isTaken ? 'taken' : ''}`} onClick={() => toggleSupp(s.id)}>
+                    <div className="supp-check">{isTaken ? "✓" : ""}</div>
+                    <div className="supp-info">
+                      <div className="supp-name">{s.name}</div>
+                      <div className="supp-dose">{s.dose}{s.warning && " · ⚠"}</div>
+                    </div>
+                    {isTaken && log.time && <div className="supp-time-stamp">{log.time}</div>}
+                  </div>
+                );
+              })}
+              {showCycled && cycledForToday.map(s => {
+                const log = todayLogs[s.id];
+                const isTaken = log?.status === "taken";
+                return (
+                  <div key={s.id} className={`supp-row ${isTaken ? 'taken' : ''}`} onClick={() => toggleSupp(s.id)}>
+                    <div className="supp-check">{isTaken ? "✓" : ""}</div>
+                    <div className="supp-info">
+                      <div className="supp-name">{s.name} <span className="mono" style={{fontSize:9, color:'var(--gold)', marginLeft:4, letterSpacing:'0.1em'}}>· M/W/F</span></div>
+                      <div className="supp-dose">{s.dose}</div>
+                    </div>
+                    {isTaken && log.time && <div className="supp-time-stamp">{log.time}</div>}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DIET SCREEN
+// ═══════════════════════════════════════════════════════════════
+
+function DietScreen({ data, setData, setSheet }) {
+  const today = todayKey();
+  const todayDow = dayOfWeek();
+  const todayMeals = MEAL_PLAN[todayDow];
+  const loggedMeals = data.meals[today] || [];
+
+  const macros = loggedMeals.reduce((acc, m) => ({
+    carbs: acc.carbs + (m.carbs || 0),
+    protein: acc.protein + (m.protein || 0),
+    fat: acc.fat + (m.fat || 0)
+  }), { carbs: 0, protein: 0, fat: 0 });
+
+  const dows = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+  return (
+    <>
+      <div className="top-bar">
+        <div className="top-bar-greeting">
+          <div className="greeting-name">Diet</div>
+          <div className="greeting-meta">{todayDow.toUpperCase()} · {formatDate(new Date()).toUpperCase()}</div>
+        </div>
+        <div className="icon-btn" onClick={() => setSheet({ type: "logMeal" })}>+</div>
+      </div>
+
+      <div className="body-content">
+        {/* Today's meals from plan */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Today's meals</div>
+            <div className="card-action" onClick={() => setSheet({ type: "logMeal" })}>log</div>
+          </div>
+          {todayMeals && (
+            <>
+              <div style={{padding:'8px 0', borderBottom:'1px solid var(--line)'}}>
+                <div className="mono" style={{fontSize:9, letterSpacing:'0.18em', color:'var(--ink-soft)', textTransform:'uppercase', marginBottom:2}}>Lunch</div>
+                <div style={{fontStyle:'italic', fontSize:14, color:'var(--ink)'}}>{todayMeals.lunch}</div>
+              </div>
+              <div style={{padding:'8px 0'}}>
+                <div className="mono" style={{fontSize:9, letterSpacing:'0.18em', color:'var(--ink-soft)', textTransform:'uppercase', marginBottom:2}}>Dinner</div>
+                <div style={{fontStyle:'italic', fontSize:14, color:'var(--ink)'}}>{todayMeals.dinner}</div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Macros */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Macros · today</div>
+            <div className="card-action">edit goals</div>
+          </div>
+          <div className="macros-row">
+            {["carbs","protein","fat"].map(m => (
+              <div key={m} className="macro">
+                <div className="macro-name">{m}</div>
+                <div className="macro-value">{macros[m]}</div>
+                <div className="macro-target">/ {data.profile.macroTargets[m]}g</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Logged meals today */}
+        {loggedMeals.length > 0 && (
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Logged today</div>
+            </div>
+            {loggedMeals.map((m, i) => (
+              <div key={i} className="activity-row">
+                <div className="activity-info">
+                  <div className="activity-name">{m.name}</div>
+                  <div className="activity-meta">{m.time} · {m.type}</div>
+                </div>
+                <div className="activity-cat">{m.carbs}g C</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Week strip */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">This week</div>
+            <div className="card-action">all meals</div>
+          </div>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:4}}>
+            {dows.map(d => {
+              const isToday = d === todayDow;
+              return (
+                <div
+                  key={d}
+                  className={isToday ? "" : ""}
+                  style={{
+                    padding:'10px 4px',
+                    background: isToday ? 'linear-gradient(135deg, rgba(201,169,97,0.12), rgba(212,154,166,0.12))' : 'var(--bg-card-deep)',
+                    border: isToday ? '1px solid var(--gold)' : 'none',
+                    borderRadius:8,
+                    textAlign:'center',
+                    cursor:'pointer'
+                  }}
+                  onClick={() => setSheet({ type: "dayMeals", day: d })}
+                >
+                  <div className="mono" style={{fontSize:8, letterSpacing:'0.15em', color: isToday ? 'var(--ink)' : 'var(--ink-soft)', fontWeight: isToday ? 600 : 400}}>{d.slice(0,1)}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Resources */}
+        <div className="card" style={{background:'linear-gradient(135deg, rgba(201,169,97,0.04), rgba(212,154,166,0.04))', borderColor:'rgba(201,169,97,0.2)'}}>
+          <div className="card-header">
+            <div className="card-title" style={{color:'var(--gold)'}}>Resources · printables</div>
+          </div>
+          <div className="settings-row">
+            <span className="settings-label">Full meal rotation</span>
+            <span className="settings-value">PDF<span className="settings-arrow">›</span></span>
+          </div>
+          <div className="settings-row">
+            <span className="settings-label">Recipe cards · all 7 days</span>
+            <span className="settings-value">PDF<span className="settings-arrow">›</span></span>
+          </div>
+          <div className="settings-row">
+            <span className="settings-label">Shopping list</span>
+            <span className="settings-value">PDF<span className="settings-arrow">›</span></span>
+          </div>
+          <div className="settings-row">
+            <span className="settings-label">Cook briefing template</span>
+            <span className="settings-value">PDF<span className="settings-arrow">›</span></span>
+          </div>
+          <div style={{fontSize:11, color:'var(--ink-faint)', marginTop:10, textAlign:'center', fontStyle:'italic'}}>Saved in your iCloud Files</div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BODY SCREEN
+// ═══════════════════════════════════════════════════════════════
+
+function BodyScreen({ data, setData, setSheet }) {
+  // Latest measurements
+  const latestMeasurement = data.measurements[data.measurements.length - 1];
+
+  // Build weight history from check-ins
+  const weightHistory = Object.entries(data.checkins)
+    .filter(([_, c]) => c.weight)
+    .map(([date, c]) => ({ date, weight: parseFloat(c.weight) }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const latestWeight = weightHistory[weightHistory.length - 1]?.weight;
+  const startWeight = weightHistory[0]?.weight;
+  const weightDelta = latestWeight && startWeight ? (latestWeight - startWeight).toFixed(1) : null;
+
+  return (
+    <>
+      <div className="top-bar">
+        <div className="top-bar-greeting">
+          <div className="greeting-name">Body</div>
+          <div className="greeting-meta">{weightHistory.length} LOGS</div>
+        </div>
+        <div className="icon-btn" onClick={() => setSheet({ type: "logBody" })}>+</div>
+      </div>
+
+      <div className="body-content">
+        {/* Weight chart */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Weight</div>
+            <div className="card-action">all time</div>
+          </div>
+          {latestWeight ? (
+            <>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:10}}>
+                <div style={{fontStyle:'italic', fontSize:30, color:'var(--ink)', lineHeight:1}}>
+                  {latestWeight} <span className="mono" style={{fontSize:11, color:'var(--ink-soft)', letterSpacing:'0.15em'}}>KG</span>
+                </div>
+                {weightDelta !== null && (
+                  <div className="mono" style={{fontSize:11, color: weightDelta < 0 ? 'var(--green)' : 'var(--ink-soft)', letterSpacing:'0.1em', textTransform:'uppercase'}}>
+                    {weightDelta > 0 ? '+' : ''}{weightDelta} kg
+                  </div>
+                )}
+              </div>
+              <WeightChart history={weightHistory} />
+            </>
+          ) : (
+            <div className="empty-state" style={{padding:'20px 0'}}>
+              <div className="empty-state-line">No weight logged yet, darling.</div>
+              <button className="btn btn-soft" onClick={() => setSheet({ type: "checkin" })}>Log first weight</button>
+            </div>
+          )}
+        </div>
+
+        {/* Measurements */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Measurements · weekly</div>
+            <div className="card-action" onClick={() => setSheet({ type: "logMeasurements" })}>log</div>
+          </div>
+          {latestMeasurement ? (
+            <div style={{display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:6}}>
+              {["waist","hips","thigh","bicep","chest"].map(m => (
+                <div key={m} style={{textAlign:'center'}}>
+                  <div className="mono" style={{fontSize:8.5, letterSpacing:'0.16em', color:'var(--ink-soft)', marginBottom:4, textTransform:'uppercase'}}>{m}</div>
+                  <div style={{fontStyle:'italic', fontSize:18, color:'var(--ink)', lineHeight:1}}>{latestMeasurement[m] || "—"}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state" style={{padding:'20px 0'}}>
+              <div className="empty-state-line">First measurements not logged yet.</div>
+            </div>
+          )}
+        </div>
+
+        {/* Photos */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Photos · weekly</div>
+            <div className="card-action" onClick={() => setSheet({ type: "addPhoto" })}>add</div>
+          </div>
+          <div className="photo-grid">
+            {data.photos.slice(-4).map((p, i, arr) => (
+              <div key={i} className={`photo-tile ${i === arr.length - 1 ? 'current' : ''}`}>
+                {p.date}
+              </div>
+            ))}
+            {data.photos.length === 0 && (
+              <div style={{gridColumn:'span 4', fontSize:11, color:'var(--ink-faint)', textAlign:'center', fontStyle:'italic', padding:20}}>
+                Photos save in your iPhone Photos app. We track the dates.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* DEXA */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">DEXA</div>
+            <div className="card-action" onClick={() => setSheet({ type: "logDexa" })}>add scan</div>
+          </div>
+          {data.dexa.length > 0 ? (
+            <div style={{display:'flex', justifyContent:'space-between'}}>
+              <div>
+                <div className="mono" style={{fontSize:9, letterSpacing:'0.16em', color:'var(--ink-soft)'}}>BODY FAT</div>
+                <div style={{fontStyle:'italic', fontSize:20, color:'var(--ink)'}}>{data.dexa[data.dexa.length-1].bodyFat}<span className="mono" style={{fontSize:10, color:'var(--ink-soft)'}}>%</span></div>
+              </div>
+              <div>
+                <div className="mono" style={{fontSize:9, letterSpacing:'0.16em', color:'var(--ink-soft)'}}>LEAN MASS</div>
+                <div style={{fontStyle:'italic', fontSize:20, color:'var(--ink)'}}>{data.dexa[data.dexa.length-1].leanMass}<span className="mono" style={{fontSize:10, color:'var(--ink-soft)'}}>kg</span></div>
+              </div>
+              <div>
+                <div className="mono" style={{fontSize:9, letterSpacing:'0.16em', color:'var(--ink-soft)'}}>VISCERAL</div>
+                <div style={{fontStyle:'italic', fontSize:20, color:'var(--ink)'}}>{data.dexa[data.dexa.length-1].visceral}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state" style={{padding:'20px 0'}}>
+              <div className="empty-state-line">No DEXA scan logged yet. The truer story than the scale.</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function WeightChart({ history }) {
+  if (history.length < 2) {
+    return <div style={{fontSize:11, color:'var(--ink-faint)', fontStyle:'italic', textAlign:'center', padding:20}}>Need at least 2 weight logs to show a chart.</div>;
+  }
+  const weights = history.map(h => h.weight);
+  const min = Math.min(...weights);
+  const max = Math.max(...weights);
+  const range = max - min || 1;
+  const w = 280;
+  const h = 80;
+  const points = history.map((p, i) => {
+    const x = (i / (history.length - 1)) * w;
+    const y = h - ((p.weight - min) / range) * (h - 10) - 5;
+    return `${x},${y}`;
+  }).join(" ");
+  const lastPoint = history[history.length - 1];
+  const lastX = w;
+  const lastY = h - ((lastPoint.weight - min) / range) * (h - 10) - 5;
+
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} style={{width:'100%', height:80, display:'block'}}>
+      <defs>
+        <linearGradient id="wtGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="rgba(201,169,97,0.18)"/>
+          <stop offset="100%" stopColor="rgba(201,169,97,0)"/>
+        </linearGradient>
+      </defs>
+      <polyline points={points + ` ${w},${h} 0,${h}`} fill="url(#wtGrad)" />
+      <polyline points={points} fill="none" stroke="#c9a961" strokeWidth="1.6" />
+      <circle cx={lastX} cy={lastY} r="4" fill="#d49aa6" />
+    </svg>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MORE SCREEN
+// ═══════════════════════════════════════════════════════════════
+
+function MoreScreen({ data, setData, setSheet, setActiveTab }) {
+  return (
+    <>
+      <div className="top-bar">
+        <div className="top-bar-greeting">
+          <div className="greeting-name">More</div>
+          <div className="greeting-meta">EXPLORE</div>
+        </div>
+      </div>
+
+      <div className="body-content">
+        <h3 className="h-section">Tracking</h3>
+        <div className="card" style={{padding:0}}>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "activities" })}>
+            <span className="settings-label">Activity log</span>
+            <span className="settings-arrow">›</span>
+          </div>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "checkin" })}>
+            <span className="settings-label">Daily check-in</span>
+            <span className="settings-arrow">›</span>
+          </div>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "bloodwork" })}>
+            <span className="settings-label">Bloodwork</span>
+            <span className="settings-arrow">›</span>
+          </div>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "period" })}>
+            <span className="settings-label">Cycle / period</span>
+            <span className="settings-arrow">›</span>
+          </div>
+        </div>
+
+        <h3 className="h-section">History</h3>
+        <div className="card" style={{padding:0}}>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "fastHistory" })}>
+            <span className="settings-label">Fast history</span>
+            <span className="settings-value">{data.fastHistory.length} fasts</span>
+          </div>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "stages" })}>
+            <span className="settings-label">Fasting stages timeline</span>
+            <span className="settings-arrow">›</span>
+          </div>
+        </div>
+
+        <h3 className="h-section">App</h3>
+        <div className="card" style={{padding:0}}>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "settings" })}>
+            <span className="settings-label">Settings</span>
+            <span className="settings-arrow">›</span>
+          </div>
+          <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "exportData" })}>
+            <span className="settings-label">Export my data</span>
+            <span className="settings-arrow">›</span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+
+function NavItem({ id, label, icon, active, onClick }) {
+  return (
+    <div className={`nav-item ${active ? 'active' : ''}`} onClick={onClick}>
+      <div className="nav-icon">{icon}</div>
+      <div>{label}</div>
+    </div>
+  );
+}
+
+function Sheet({ children, onClose }) {
+  return (
+    <div className="sheet-backdrop" onClick={onClose}>
+      <div className="sheet" onClick={e => e.stopPropagation()}>
+        <div className="sheet-handle" />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Main App with sheet routing
+function AppWithSheets() {
+  return <App />;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SHEET CONTENT — handles all sheet types
+// ═══════════════════════════════════════════════════════════════
+
+function SheetContent({ sheet, data, setData, setSheet, showToast, setActiveTab }) {
+  if (!sheet) return null;
+
+  switch (sheet.type) {
+    case "checkin":
+      return <CheckinSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "editFast":
+      return <EditFastSheet fast={sheet.fast} data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "endFast":
+      return <EndFastSheet onConfirm={sheet.onConfirm} setSheet={setSheet} />;
+    case "startFast":
+      return <StartFastSheet onStart={sheet.onStart} defaultHours={sheet.defaultHours} setSheet={setSheet} />;
+    case "stages":
+      return <StagesSheet data={data} />;
+    case "editDrinks":
+      return <EditDrinksSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "editSupps":
+      return <EditSuppsSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "logMeal":
+      return <LogMealSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "logBody":
+      return <LogBodySheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} setActiveTab={setActiveTab} />;
+    case "logMeasurements":
+      return <LogMeasurementsSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "addPhoto":
+      return <AddPhotoSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "logDexa":
+      return <LogDexaSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "activities":
+      return <ActivitiesSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "bloodwork":
+      return <BloodworkSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "period":
+      return <PeriodSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "fastHistory":
+      return <FastHistorySheet data={data} />;
+    case "settings":
+      return <SettingsSheet data={data} setData={setData} setSheet={setSheet} showToast={showToast} />;
+    case "dayMeals":
+      return <DayMealsSheet day={sheet.day} data={data} />;
+    case "exportData":
+      return <ExportDataSheet data={data} showToast={showToast} setSheet={setSheet} />;
+    default:
+      return <div><h2 className="sheet-title">Coming soon</h2><p className="carrie-line">{sheet.type}</p></div>;
+  }
+}
+
+// ─── Daily Check-in ──────────────────────────────────────────
+function CheckinSheet({ data, setData, setSheet, showToast }) {
+  const today = todayKey();
+  const existing = data.checkins[today] || {};
+
+  const [weight, setWeight] = useState(existing.weight || "");
+  const [bedtime, setBedtime] = useState(existing.sleep?.bedtime || "");
+  const [wakeTime, setWakeTime] = useState(existing.sleep?.wakeTime || "");
+  const [rested, setRested] = useState(existing.sleep?.rested || null);
+  const [meditated, setMeditated] = useState(existing.meditation?.did || false);
+  const [medDuration, setMedDuration] = useState(existing.meditation?.duration || 10);
+  const [sliders, setSliders] = useState(existing.sliders || {
+    energy: 7, sleep: 7, mood: 7, cravings: 3, bloat: 3
+  });
+  const [note, setNote] = useState(existing.note || "");
+
+  // Calculate sleep hours
+  const calcHours = () => {
+    if (!bedtime || !wakeTime) return null;
+    const [bh, bm] = bedtime.split(":").map(Number);
+    const [wh, wm] = wakeTime.split(":").map(Number);
+    let hours = (wh + wm/60) - (bh + bm/60);
+    if (hours < 0) hours += 24;
+    return hours.toFixed(1);
+  };
+  const sleepHours = calcHours();
+
+  const save = () => {
+    const checkin = {
+      ts: Date.now(),
+      weight: weight ? parseFloat(weight) : null,
+      sleep: { bedtime, wakeTime, hours: sleepHours, rested },
+      meditation: { did: meditated, duration: meditated ? medDuration : 0 },
+      sliders,
+      note
+    };
+    setData({ ...data, checkins: { ...data.checkins, [today]: checkin } });
+    showToast("Saved, beautifully done.");
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Daily check-in</h2>
+      <div className="sheet-sub">{formatDate(new Date())}</div>
+
+      <p className="carrie-line" style={{textAlign:'left', marginBottom:20}}>A few quick reads. Then we move on.</p>
+
+      <div className="field">
+        <div className="field-label">Weight (kg)</div>
+        <input className="input" type="number" step="0.1" value={weight} onChange={e => setWeight(e.target.value)} placeholder="62.4" />
+      </div>
+
+      <h3 className="h-section">Sleep last night</h3>
+      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:10}}>
+        <div className="field" style={{margin:0}}>
+          <div className="field-label" style={{marginBottom:4}}>Bedtime</div>
+          <input className="input" type="time" value={bedtime} onChange={e => setBedtime(e.target.value)} style={{padding:'10px 12px', fontSize:14}} />
+        </div>
+        <div className="field" style={{margin:0}}>
+          <div className="field-label" style={{marginBottom:4}}>Wake</div>
+          <input className="input" type="time" value={wakeTime} onChange={e => setWakeTime(e.target.value)} style={{padding:'10px 12px', fontSize:14}} />
+        </div>
+      </div>
+      {sleepHours && (
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 12px', background:'var(--bg-card)', border:'1px solid var(--line)', borderRadius:10, marginBottom:18}}>
+          <div>
+            <span style={{fontStyle:'italic', fontSize:18, color:'var(--ink)'}}>{sleepHours}</span>
+            <span className="mono" style={{fontSize:10, color:'var(--ink-soft)', letterSpacing:'0.12em', marginLeft:4}}>HOURS</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:8}}>
+            <span className="mono" style={{fontSize:9, letterSpacing:'0.16em', color:'var(--ink-soft)', textTransform:'uppercase'}}>Rested?</span>
+            <div style={{display:'flex', gap:4}}>
+              <div className={`chip ${rested === true ? 'active' : ''}`} onClick={() => setRested(true)}>Yes</div>
+              <div className={`chip ${rested === false ? 'active' : ''}`} onClick={() => setRested(false)}>No</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <h3 className="h-section">Meditation</h3>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 12px', background:'var(--bg-card)', border:'1px solid var(--line)', borderRadius:10, marginBottom:18}}>
+        <div style={{display:'flex', alignItems:'center', gap:8}}>
+          <div
+            style={{
+              width:18, height:18, borderRadius:4,
+              background: meditated ? 'var(--green)' : 'transparent',
+              border: `1.5px solid ${meditated ? 'var(--green)' : 'var(--ink-faint)'}`,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              color:'#fff', fontSize:11, cursor:'pointer'
+            }}
+            onClick={() => setMeditated(!meditated)}
+          >{meditated ? "✓" : ""}</div>
+          <span style={{fontStyle:'italic', fontSize:14, color:'var(--ink)'}}>Sat today</span>
+        </div>
+        {meditated && (
+          <div style={{display:'flex', gap:4}}>
+            {[5, 10, 15, 20].map(d => (
+              <div key={d} className={`chip ${medDuration === d ? 'active' : ''}`} onClick={() => setMedDuration(d)}>{d}</div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <h3 className="h-section">How was today</h3>
+      <div className="card">
+        {[
+          { key: 'energy', name: 'Energy' },
+          { key: 'sleep', name: 'Sleep quality' },
+          { key: 'mood', name: 'Mood' },
+          { key: 'cravings', name: 'Cravings' },
+          { key: 'bloat', name: 'Bloat' }
+        ].map(s => (
+          <SliderRow
+            key={s.key}
+            name={s.name}
+            value={sliders[s.key]}
+            onChange={v => setSliders({ ...sliders, [s.key]: v })}
+          />
+        ))}
+      </div>
+
+      <div className="field" style={{marginTop:18}}>
+        <div className="field-label">A note (optional)</div>
+        <textarea
+          className="input"
+          rows="2"
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          placeholder="how does today feel..."
+          style={{resize:'none'}}
+        />
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Save check-in</button>
+      </div>
+    </>
+  );
+}
+
+function SliderRow({ name, value, onChange }) {
+  return (
+    <div className="slider-row">
+      <div className="slider-label">
+        <span className="slider-label-name">{name}</span>
+        <span className="slider-label-value">{value}/10</span>
+      </div>
+      <div className="slider-track">
+        {[1,2,3,4,5,6,7,8,9,10].map(i => (
+          <div
+            key={i}
+            className={`slider-pip ${i <= value ? 'filled' : ''}`}
+            onClick={() => onChange(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Edit Fast (change goal mid-fast) ────────────────────────
+function EditFastSheet({ fast, data, setData, setSheet, showToast }) {
+  const [hours, setHours] = useState(fast.goalHours);
+
+  const save = () => {
+    setData({ ...data, activeFast: { ...fast, goalHours: parseInt(hours) } });
+    showToast(`Target updated to ${hours} hours.`);
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Change target</h2>
+      <div className="sheet-sub">Mid-fast adjustment</div>
+      <p className="carrie-line" style={{textAlign:'left', marginBottom:20}}>Sometimes the body asks for more. Sometimes for less.</p>
+
+      <div className="field">
+        <div className="field-label">New target (hours)</div>
+        <input className="input" type="number" value={hours} onChange={e => setHours(e.target.value)} />
+      </div>
+
+      <div className="chip-row" style={{marginBottom:20}}>
+        {[16, 20, 24, 36, 48, 72, 84, 96, 120].map(h => (
+          <div key={h} className={`chip ${parseInt(hours) === h ? 'active' : ''}`} onClick={() => setHours(h)}>{h}h</div>
+        ))}
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Update</button>
+      </div>
+    </>
+  );
+}
+
+// ─── End Fast ────────────────────────────────────────────────
+function EndFastSheet({ onConfirm, setSheet }) {
+  return (
+    <>
+      <h2 className="sheet-title">Break the fast?</h2>
+      <div className="sheet-sub">A real moment</div>
+      <p className="carrie-line" style={{textAlign:'left', marginBottom:24, lineHeight:1.6}}>
+        Whatever you came for, you've done. Refeed gently — bone broth first, then a small protein meal an hour later.
+      </p>
+
+      <div className="footer-area" style={{paddingTop:0, gap:8, justifyContent:'space-between'}}>
+        <button className="btn btn-soft" onClick={() => setSheet(null)}>Keep going</button>
+        <button className="btn" onClick={() => { onConfirm(); setSheet(null); }}>Break fast</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Start Fast ──────────────────────────────────────────────
+function StartFastSheet({ onStart, defaultHours, setSheet }) {
+  const [hours, setHours] = useState(defaultHours || 16);
+
+  return (
+    <>
+      <h2 className="sheet-title">Begin a fast</h2>
+      <div className="sheet-sub">Pick your target</div>
+
+      <div className="chip-row" style={{marginBottom:20}}>
+        {[16, 20, 24, 36, 48, 72, 84, 96, 120].map(h => (
+          <div key={h} className={`chip ${hours === h ? 'active' : ''}`} onClick={() => setHours(h)}>{h}h</div>
+        ))}
+      </div>
+
+      <div className="field">
+        <div className="field-label">Custom (hours)</div>
+        <input className="input" type="number" value={hours} onChange={e => setHours(parseInt(e.target.value) || 16)} />
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={() => { onStart(hours); setSheet(null); }}>Start</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Stages Timeline ─────────────────────────────────────────
+function StagesSheet({ data }) {
+  const fast = data.activeFast;
+  const elapsedHours = fast ? (Date.now() - fast.startedAt) / 1000 / 60 / 60 : 0;
+
+  return (
+    <>
+      <h2 className="sheet-title">The 36 stages</h2>
+      <div className="sheet-sub">What happens, hour by hour</div>
+
+      <div style={{maxHeight:'70vh', overflowY:'auto', paddingRight:8}}>
+        {FAST_STAGES.map((s, i) => {
+          const passed = elapsedHours >= s.hour;
+          const current = passed && (i === FAST_STAGES.length - 1 || elapsedHours < FAST_STAGES[i+1]?.hour);
+          return (
+            <div
+              key={s.hour}
+              className={`card ${current ? 'card-stage' : ''}`}
+              style={{
+                marginBottom: 10,
+                opacity: passed ? 1 : 0.5,
+                padding: '12px 14px'
+              }}
+            >
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:4}}>
+                <h4 style={{fontStyle:'italic', fontSize:15, color:'var(--ink)', margin:0}}>{s.headline}</h4>
+                <span className="mono" style={{fontSize:9, color: current ? 'var(--gold)' : 'var(--ink-soft)', letterSpacing:'0.16em', fontWeight: current ? 600 : 400}}>{s.hour}H</span>
+              </div>
+              <p style={{fontStyle:'italic', fontSize:12, color:'var(--ink-soft)', margin:0, lineHeight:1.5}}>{s.carrie}</p>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+// ─── Edit Drinks ─────────────────────────────────────────────
+function EditDrinksSheet({ data, setData, setSheet, showToast }) {
+  const [drinks, setDrinks] = useState(data.drinks);
+  const [newSymbol, setNewSymbol] = useState("");
+  const [newLabel, setNewLabel] = useState("");
+
+  const remove = (id) => setDrinks(drinks.filter(d => d.id !== id));
+  const add = () => {
+    if (!newLabel) return;
+    setDrinks([...drinks, { id: Date.now().toString(), symbol: newSymbol || "·", label: newLabel }]);
+    setNewSymbol("");
+    setNewLabel("");
+  };
+  const save = () => {
+    setData({ ...data, drinks });
+    showToast("Drinks updated.");
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Edit drinks</h2>
+      <div className="sheet-sub">What you drink, your way</div>
+
+      {drinks.map(d => (
+        <div key={d.id} className="settings-row">
+          <div style={{display:'flex', alignItems:'center', gap:10}}>
+            <span style={{fontSize:18}}>{d.symbol}</span>
+            <span className="settings-label">{d.label}</span>
+          </div>
+          <span className="mono" style={{fontSize:10, color:'var(--warn)', cursor:'pointer'}} onClick={() => remove(d.id)}>remove</span>
+        </div>
+      ))}
+
+      <h3 className="h-section">Add a drink</h3>
+      <div style={{display:'grid', gridTemplateColumns:'1fr 3fr', gap:8, marginBottom:14}}>
+        <input className="input" placeholder="◌" value={newSymbol} onChange={e => setNewSymbol(e.target.value)} />
+        <input className="input" placeholder="label (e.g. green tea)" value={newLabel} onChange={e => setNewLabel(e.target.value)} />
+      </div>
+      <button className="btn btn-soft" onClick={add} style={{marginBottom:18}}>Add</button>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Save</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Edit Supplements ────────────────────────────────────────
+function EditSuppsSheet({ data, setData, setSheet, showToast }) {
+  const [supps, setSupps] = useState(data.supplements);
+
+  const remove = (id) => setSupps(supps.filter(s => s.id !== id));
+  const save = () => {
+    setData({ ...data, supplements: supps });
+    showToast("Stack updated.");
+    setSheet(null);
+  };
+
+  // Group by bucket
+  const byBucket = {};
+  supps.forEach(s => {
+    if (!byBucket[s.bucket]) byBucket[s.bucket] = [];
+    byBucket[s.bucket].push(s);
+  });
+
+  return (
+    <>
+      <h2 className="sheet-title">Edit stack</h2>
+      <div className="sheet-sub">{supps.length} items · all editable</div>
+
+      <div style={{maxHeight:'70vh', overflowY:'auto', paddingRight:8}}>
+        {Object.keys(BUCKET_LABELS).map(bucket => {
+          const items = byBucket[bucket];
+          if (!items?.length) return null;
+          return (
+            <div key={bucket} className="supp-bucket">
+              <div className="supp-bucket-label">
+                <span>{BUCKET_LABELS[bucket].label}</span>
+                <span>{BUCKET_LABELS[bucket].time}</span>
+              </div>
+              {items.map(s => (
+                <div key={s.id} className="supp-row">
+                  <div className="supp-info">
+                    <div className="supp-name">{s.name}</div>
+                    <div className="supp-dose">{s.dose}</div>
+                  </div>
+                  <span className="mono" style={{fontSize:10, color:'var(--warn)', cursor:'pointer'}} onClick={() => remove(s.id)}>remove</span>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      <p style={{fontSize:11, color:'var(--ink-faint)', textAlign:'center', fontStyle:'italic', margin:'14px 0'}}>
+        Adding new items, reordering, dose edits coming soon. For now: remove what you don't take.
+      </p>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Save</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Log Meal ────────────────────────────────────────────────
+function LogMealSheet({ data, setData, setSheet, showToast }) {
+  const [type, setType] = useState("lunch");
+  const [name, setName] = useState("");
+  const [carbs, setCarbs] = useState("");
+  const [protein, setProtein] = useState("");
+  const [fat, setFat] = useState("");
+
+  const save = () => {
+    if (!name) { showToast("What did you eat?"); return; }
+    const today = todayKey();
+    const meal = {
+      ts: Date.now(),
+      time: new Date().toTimeString().slice(0, 5),
+      type, name,
+      carbs: parseInt(carbs) || 0,
+      protein: parseInt(protein) || 0,
+      fat: parseInt(fat) || 0
+    };
+    const todayMeals = data.meals[today] || [];
+    setData({ ...data, meals: { ...data.meals, [today]: [...todayMeals, meal] } });
+    showToast("Logged.");
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Log a meal</h2>
+      <div className="sheet-sub">What you actually ate</div>
+
+      <div className="field">
+        <div className="field-label">Type</div>
+        <div className="chip-row">
+          {["breakfast","lunch","dinner","snack"].map(t => (
+            <div key={t} className={`chip ${type === t ? 'active' : ''}`} onClick={() => setType(t)}>{t}</div>
+          ))}
+        </div>
+      </div>
+
+      <div className="field">
+        <div className="field-label">Meal</div>
+        <input className="input" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grilled salmon + broccoli" />
+      </div>
+
+      <div className="field">
+        <div className="field-label">Macros (grams)</div>
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8}}>
+          <div>
+            <div className="mono" style={{fontSize:8.5, letterSpacing:'0.16em', color:'var(--ink-soft)', marginBottom:4, textTransform:'uppercase'}}>Carbs</div>
+            <input className="input" type="number" value={carbs} onChange={e => setCarbs(e.target.value)} style={{padding:'10px 12px', fontSize:14}} />
+          </div>
+          <div>
+            <div className="mono" style={{fontSize:8.5, letterSpacing:'0.16em', color:'var(--ink-soft)', marginBottom:4, textTransform:'uppercase'}}>Protein</div>
+            <input className="input" type="number" value={protein} onChange={e => setProtein(e.target.value)} style={{padding:'10px 12px', fontSize:14}} />
+          </div>
+          <div>
+            <div className="mono" style={{fontSize:8.5, letterSpacing:'0.16em', color:'var(--ink-soft)', marginBottom:4, textTransform:'uppercase'}}>Fat</div>
+            <input className="input" type="number" value={fat} onChange={e => setFat(e.target.value)} style={{padding:'10px 12px', fontSize:14}} />
+          </div>
+        </div>
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Log meal</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Log Body (weight only, redirects to checkin) ────────────
+function LogBodySheet({ data, setData, setSheet, setActiveTab }) {
+  return (
+    <>
+      <h2 className="sheet-title">Log body data</h2>
+      <div className="sheet-sub">What to update</div>
+
+      <div className="card" style={{padding:0}} onClick={() => setSheet({ type: "checkin" })}>
+        <div className="settings-row" style={{padding:'14px 18px', cursor:'pointer'}}>
+          <span className="settings-label">Weight (via daily check-in)</span>
+          <span className="settings-arrow">›</span>
+        </div>
+      </div>
+      <div className="card" style={{padding:0}} onClick={() => setSheet({ type: "logMeasurements" })}>
+        <div className="settings-row" style={{padding:'14px 18px', cursor:'pointer'}}>
+          <span className="settings-label">Measurements (waist, hips, etc.)</span>
+          <span className="settings-arrow">›</span>
+        </div>
+      </div>
+      <div className="card" style={{padding:0}} onClick={() => setSheet({ type: "addPhoto" })}>
+        <div className="settings-row" style={{padding:'14px 18px', cursor:'pointer'}}>
+          <span className="settings-label">Photo (date)</span>
+          <span className="settings-arrow">›</span>
+        </div>
+      </div>
+      <div className="card" style={{padding:0}} onClick={() => setSheet({ type: "logDexa" })}>
+        <div className="settings-row" style={{padding:'14px 18px', cursor:'pointer'}}>
+          <span className="settings-label">DEXA scan</span>
+          <span className="settings-arrow">›</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Log Measurements ────────────────────────────────────────
+function LogMeasurementsSheet({ data, setData, setSheet, showToast }) {
+  const [m, setM] = useState({ waist: "", hips: "", thigh: "", bicep: "", chest: "" });
+
+  const save = () => {
+    const measurement = {
+      ts: Date.now(),
+      date: todayKey(),
+      ...Object.fromEntries(Object.entries(m).map(([k, v]) => [k, parseFloat(v) || null]))
+    };
+    setData({ ...data, measurements: [...data.measurements, measurement] });
+    showToast("Measurements logged.");
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Measurements</h2>
+      <div className="sheet-sub">In cm · skip what you don't measure</div>
+
+      {[
+        { key: "waist", name: "Waist" },
+        { key: "hips", name: "Hips" },
+        { key: "thigh", name: "Thigh" },
+        { key: "bicep", name: "Bicep" },
+        { key: "chest", name: "Chest" }
+      ].map(f => (
+        <div key={f.key} className="field">
+          <div className="field-label">{f.name}</div>
+          <input className="input" type="number" step="0.5" value={m[f.key]} onChange={e => setM({ ...m, [f.key]: e.target.value })} placeholder="cm" />
+        </div>
+      ))}
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Save</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Add Photo (just date tracking) ──────────────────────────
+function AddPhotoSheet({ data, setData, setSheet, showToast }) {
+  const [date, setDate] = useState(todayKey());
+  const [note, setNote] = useState("");
+
+  const save = () => {
+    const photo = { date, ts: Date.now(), note };
+    setData({ ...data, photos: [...data.photos, photo] });
+    showToast("Photo date logged. Save the actual photo to your iPhone Photos.");
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Photo date</h2>
+      <div className="sheet-sub">We track the date · photos live in your iPhone</div>
+
+      <p className="carrie-line" style={{textAlign:'left', marginBottom:20, fontSize:13}}>
+        Take the photo in your iPhone Photos app — same lighting, same time, same outfit. Then mark the date here.
+      </p>
+
+      <div className="field">
+        <div className="field-label">Date</div>
+        <input className="input" type="date" value={date} onChange={e => setDate(e.target.value)} />
+      </div>
+
+      <div className="field">
+        <div className="field-label">Note (optional)</div>
+        <input className="input" value={note} onChange={e => setNote(e.target.value)} placeholder="e.g. week 2 morning" />
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Mark date</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Log DEXA ────────────────────────────────────────────────
+function LogDexaSheet({ data, setData, setSheet, showToast }) {
+  const [date, setDate] = useState(todayKey());
+  const [bodyFat, setBodyFat] = useState("");
+  const [leanMass, setLeanMass] = useState("");
+  const [visceral, setVisceral] = useState("");
+
+  const save = () => {
+    const scan = {
+      ts: Date.now(),
+      date,
+      bodyFat: parseFloat(bodyFat) || null,
+      leanMass: parseFloat(leanMass) || null,
+      visceral: parseFloat(visceral) || null
+    };
+    setData({ ...data, dexa: [...data.dexa, scan] });
+    showToast("DEXA scan logged.");
+    setSheet(null);
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">DEXA scan</h2>
+      <div className="sheet-sub">Body composition truth</div>
+
+      <div className="field">
+        <div className="field-label">Date</div>
+        <input className="input" type="date" value={date} onChange={e => setDate(e.target.value)} />
+      </div>
+      <div className="field">
+        <div className="field-label">Body Fat (%)</div>
+        <input className="input" type="number" step="0.1" value={bodyFat} onChange={e => setBodyFat(e.target.value)} />
+      </div>
+      <div className="field">
+        <div className="field-label">Lean Mass (kg)</div>
+        <input className="input" type="number" step="0.1" value={leanMass} onChange={e => setLeanMass(e.target.value)} />
+      </div>
+      <div className="field">
+        <div className="field-label">Visceral Fat</div>
+        <input className="input" type="number" step="0.1" value={visceral} onChange={e => setVisceral(e.target.value)} />
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Save</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Activities ──────────────────────────────────────────────
+function ActivitiesSheet({ data, setData, setSheet, showToast }) {
+  const [adding, setAdding] = useState(false);
+  const [category, setCategory] = useState("strength");
+  const [name, setName] = useState("");
+  const [duration, setDuration] = useState("");
+  const [calories, setCalories] = useState("");
+  const [note, setNote] = useState("");
+
+  // Past activity names for autocomplete (simple)
+  const pastNames = [...new Set(data.activities.map(a => a.name))];
+
+  const save = () => {
+    if (!name) { showToast("What did you do?"); return; }
+    const activity = {
+      id: Date.now(),
+      ts: Date.now(),
+      date: todayKey(),
+      category,
+      name,
+      duration: parseInt(duration) || 0,
+      calories: parseInt(calories) || 0,
+      note
+    };
+    setData({ ...data, activities: [...data.activities, activity] });
+    showToast("Logged.");
+    setName("");
+    setDuration("");
+    setCalories("");
+    setNote("");
+    setAdding(false);
+  };
+
+  // Show today's activities
+  const today = todayKey();
+  const todayActivities = data.activities.filter(a => a.date === today);
+  const recentActivities = data.activities.slice(-15).reverse();
+
+  if (adding) {
+    return (
+      <>
+        <h2 className="sheet-title">Log activity</h2>
+        <div className="sheet-sub">What you did, how long</div>
+
+        <div className="field">
+          <div className="field-label">Category</div>
+          <div className="chip-row">
+            {ACTIVITY_CATEGORIES.map(c => (
+              <div key={c.id} className={`chip ${category === c.id ? 'active' : ''}`} onClick={() => setCategory(c.id)}>{c.label}</div>
+            ))}
+          </div>
+        </div>
+
+        <div className="field">
+          <div className="field-label">What did you do</div>
+          <input className="input" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Pilates reformer" list="activity-names" />
+          <datalist id="activity-names">
+            {pastNames.map(n => <option key={n} value={n} />)}
+          </datalist>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14}}>
+          <div className="field" style={{margin:0}}>
+            <div className="field-label">Duration (min)</div>
+            <input className="input" type="number" value={duration} onChange={e => setDuration(e.target.value)} />
+          </div>
+          <div className="field" style={{margin:0}}>
+            <div className="field-label">Calories</div>
+            <input className="input" type="number" value={calories} onChange={e => setCalories(e.target.value)} placeholder="from Apple Watch" />
+          </div>
+        </div>
+
+        <div className="field">
+          <div className="field-label">Note (optional)</div>
+          <input className="input" value={note} onChange={e => setNote(e.target.value)} placeholder="how did it feel..." />
+        </div>
+
+        <div className="footer-area" style={{paddingTop:0, gap:8, justifyContent:'space-between'}}>
+          <button className="btn btn-soft" onClick={() => setAdding(false)}>Cancel</button>
+          <button className="btn" onClick={save}>Save</button>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <h2 className="sheet-title">Activities</h2>
+      <div className="sheet-sub">{todayActivities.length} today · {data.activities.length} total</div>
+
+      <button className="btn" onClick={() => setAdding(true)} style={{margin:'0 auto 20px', display:'block'}}>+ Log activity</button>
+
+      {recentActivities.length === 0 && (
+        <div className="empty-state">
+          <div className="empty-state-line">No activities yet, darling.<br/>Tap above to log your first.</div>
+        </div>
+      )}
+
+      {recentActivities.map(a => {
+        const cat = ACTIVITY_CATEGORIES.find(c => c.id === a.category);
+        const date = new Date(a.ts);
+        return (
+          <div key={a.id} className="activity-row">
+            <div className="activity-info">
+              <div className="activity-name">{a.name}</div>
+              <div className="activity-meta">{formatDate(date)} · {a.duration}min{a.calories ? ` · ${a.calories} kcal` : ''}</div>
+            </div>
+            <div className={`activity-cat ${cat?.color || ''}`}>{cat?.label || a.category}</div>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+// ─── Bloodwork ───────────────────────────────────────────────
+function BloodworkSheet({ data, setData, setSheet }) {
+  const tests = data.bloodwork;
+  const allMarkers = {};
+
+  // Collect all markers across tests
+  tests.forEach(t => {
+    Object.keys(t.panel).forEach(panel => {
+      if (!allMarkers[panel]) allMarkers[panel] = new Set();
+      Object.keys(t.panel[panel]).forEach(m => allMarkers[panel].add(m));
+    });
+  });
+
+  const markerLabels = {
+    tsh: "TSH", ft3: "Free T3", ft4: "Free T4",
+    ldl: "LDL", hdl: "HDL", triglycerides: "Triglycerides", totalCholesterol: "Total Cholesterol", apoB: "ApoB", lpa: "Lp(a)",
+    glucose: "Glucose · F", hba1c: "HbA1c", insulin: "Insulin · F",
+    d: "Vitamin D", b12: "B12", folate: "Folate", ferritin: "Ferritin",
+    hsCRP: "hs-CRP", ige: "IgE"
+  };
+
+  const panelLabels = {
+    thyroid: "Thyroid", lipids: "Lipids", metabolic: "Metabolic",
+    vitamins: "Vitamins", inflammation: "Inflammation"
+  };
+
+  const cellClass = (panel, marker, value) => {
+    if (value === null || value === undefined) return 'bw-cell-empty';
+    const ranges = {
+      tsh: { high: 4 }, ft3: { low: 2.0 }, ft4: { low: 0.9 },
+      ldl: { high: 130 }, hdl: { low: 40 }, triglycerides: { high: 150 },
+      totalCholesterol: { high: 200 }, apoB: { high: 100 }, lpa: { high: 30 },
+      glucose: { high: 100 }, hba1c: { high: 5.7 },
+      d: { low: 30 }, b12: { low: 200 }, folate: { low: 4 }, ferritin: { low: 30 }
+    };
+    const r = ranges[marker];
+    if (!r) return '';
+    if (r.high && value > r.high) return 'bw-cell-high';
+    if (r.low && value < r.low) return 'bw-cell-low';
+    return 'bw-cell-good';
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Bloodwork</h2>
+      <div className="sheet-sub">{tests.length} {tests.length === 1 ? 'test' : 'tests'} logged</div>
+
+      <p className="carrie-line" style={{textAlign:'left', marginBottom:16, fontSize:12}}>Watch the trends. The numbers tell the truer story.</p>
+
+      <div style={{overflowX:'auto', marginBottom:14}}>
+        <table className="bw-table">
+          <thead>
+            <tr>
+              <th>Marker</th>
+              {tests.map(t => <th key={t.date}>{t.label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(allMarkers).map(panel => (
+              <React.Fragment key={panel}>
+                <tr className="bw-section-row">
+                  <td colSpan={tests.length + 1}>{panelLabels[panel] || panel}</td>
+                </tr>
+                {[...allMarkers[panel]].map(m => (
+                  <tr key={m}>
+                    <td>{markerLabels[m] || m}</td>
+                    {tests.map(t => {
+                      const v = t.panel[panel]?.[m];
+                      return <td key={t.date} className={cellClass(panel, m, v)}>{v ?? '—'}</td>;
+                    })}
+                  </tr>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card" style={{padding:'10px 14px', textAlign:'center'}}>
+        <div className="mono" style={{fontSize:9, letterSpacing:'0.05em', color:'var(--ink-soft)'}}>
+          <span style={{color:'var(--warn)'}}>● out of range</span>{' '}
+          <span style={{color:'var(--green)'}}>● optimal</span>{' '}
+          <span>● in range</span>{' '}
+          <span style={{color:'var(--ink-faint)'}}>— not yet</span>
+        </div>
+      </div>
+
+      <p style={{fontSize:11, color:'var(--ink-faint)', textAlign:'center', fontStyle:'italic', margin:'14px 0'}}>
+        Full reports live in your Files. Adding new test results coming soon.
+      </p>
+    </>
+  );
+}
+
+// ─── Period Tracker ──────────────────────────────────────────
+function PeriodSheet({ data, setData, setSheet, showToast }) {
+  const [date, setDate] = useState(data.profile.lastPeriodDate || todayKey());
+
+  const save = () => {
+    setData({
+      ...data,
+      profile: { ...data.profile, lastPeriodDate: date },
+      periods: [...data.periods, { start: date }]
+    });
+    showToast("Period date saved.");
+    setSheet(null);
+  };
+
+  const cycle = getCyclePhase(data.profile.lastPeriodDate, data.profile.cycleLength || 28);
+
+  return (
+    <>
+      <h2 className="sheet-title">Cycle</h2>
+      <div className="sheet-sub">Quietly noted</div>
+
+      {cycle && (
+        <div className="card card-stage" style={{textAlign:'center', marginBottom:18}}>
+          <div className="mono" style={{fontSize:10, letterSpacing:'0.2em', color:'var(--gold)', textTransform:'uppercase'}}>
+            DAY {cycle.day} · {cycle.phase}
+          </div>
+        </div>
+      )}
+
+      <div className="field">
+        <div className="field-label">Last period start</div>
+        <input className="input" type="date" value={date} onChange={e => setDate(e.target.value)} />
+      </div>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={save}>Save</button>
+      </div>
+    </>
+  );
+}
+
+// ─── Fast History ────────────────────────────────────────────
+function FastHistorySheet({ data }) {
+  if (data.fastHistory.length === 0) {
+    return (
+      <>
+        <h2 className="sheet-title">Fast history</h2>
+        <div className="sheet-sub">No completed fasts yet</div>
+        <div className="empty-state" style={{padding:'40px 20px'}}>
+          <div className="empty-state-line">Your first fast will appear here when complete.</div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <h2 className="sheet-title">Fast history</h2>
+      <div className="sheet-sub">{data.fastHistory.length} completed</div>
+
+      {data.fastHistory.slice().reverse().map(f => {
+        const start = new Date(f.startedAt);
+        const end = new Date(f.endedAt);
+        const hours = ((f.endedAt - f.startedAt) / 1000 / 60 / 60).toFixed(1);
+        return (
+          <div key={f.id} className="card" style={{padding:'12px 14px'}}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:4}}>
+              <div style={{fontStyle:'italic', fontSize:16, color:'var(--ink)'}}>{hours} hours</div>
+              <div className="mono" style={{fontSize:9, color:'var(--ink-soft)', letterSpacing:'0.1em'}}>{f.goalHours}H GOAL</div>
+            </div>
+            <div className="mono" style={{fontSize:10, color:'var(--ink-faint)', letterSpacing:'0.05em'}}>
+              {formatDate(start)} → {formatDate(end)}
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+// ─── Settings ────────────────────────────────────────────────
+function SettingsSheet({ data, setData, setSheet, showToast }) {
+  const [editing, setEditing] = useState(null);
+  const profile = data.profile;
+
+  const updateProfile = (k, v) => {
+    setData({ ...data, profile: { ...profile, [k]: v }});
+  };
+
+  const updateMacro = (m, v) => {
+    setData({ ...data, profile: { ...profile, macroTargets: { ...profile.macroTargets, [m]: parseInt(v) || 0 }}});
+  };
+
+  const toggleMode = (m) => {
+    const exists = profile.modes.includes(m);
+    const newModes = exists ? profile.modes.filter(x => x !== m) : [...profile.modes, m];
+    updateProfile("modes", newModes);
+  };
+
+  const reset = () => {
+    if (confirm("Reset all data? This cannot be undone.")) {
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.reload();
+    }
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Settings</h2>
+      <div className="sheet-sub">Everything is editable</div>
+
+      <h3 className="h-section">You</h3>
+      <div className="card" style={{padding:0}}>
+        <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setEditing("name")}>
+          <span className="settings-label">Name</span>
+          <span className="settings-value">{profile.name}<span className="settings-arrow">›</span></span>
+        </div>
+        <div className="settings-row" style={{padding:'14px 18px'}}>
+          <span className="settings-label">Sex</span>
+          <span className="settings-value" style={{textTransform:'capitalize'}}>{profile.sex}</span>
+        </div>
+        <div className="settings-row" style={{padding:'14px 18px'}}>
+          <span className="settings-label">DOB</span>
+          <span className="settings-value">{profile.dob}</span>
+        </div>
+        <div className="settings-row" style={{padding:'14px 18px'}}>
+          <span className="settings-label">Height</span>
+          <span className="settings-value">{profile.height} cm</span>
+        </div>
+      </div>
+
+      <h3 className="h-section">Modes (multi-select)</h3>
+      <div className="card" style={{padding:0}}>
+        {[
+          { id: "extended", name: "Extended Fast" },
+          { id: "if", name: "Intermittent Fasting" },
+          { id: "keto", name: "Keto" },
+          { id: "other", name: "Other" }
+        ].map(m => (
+          <div key={m.id} className="settings-row" style={{padding:'14px 18px', cursor:'pointer'}} onClick={() => toggleMode(m.id)}>
+            <span className="settings-label">{m.name}</span>
+            <span className="settings-value">{profile.modes.includes(m.id) ? "✓" : ""}</span>
+          </div>
+        ))}
+      </div>
+
+      <h3 className="h-section">Macro targets</h3>
+      <div className="card">
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8}}>
+          {["carbs","protein","fat"].map(m => (
+            <div key={m}>
+              <div className="mono" style={{fontSize:8.5, letterSpacing:'0.16em', color:'var(--ink-soft)', marginBottom:4, textTransform:'uppercase'}}>{m}</div>
+              <input className="input" type="number" value={profile.macroTargets[m]} onChange={e => updateMacro(m, e.target.value)} style={{padding:'10px 12px', fontSize:14}} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <h3 className="h-section">Fast goal default</h3>
+      <div className="card">
+        <input
+          className="input"
+          type="number"
+          value={profile.defaultFastHours}
+          onChange={e => updateProfile("defaultFastHours", parseInt(e.target.value) || 16)}
+        />
+      </div>
+
+      <h3 className="h-section">Cycle</h3>
+      <div className="card" style={{padding:0}}>
+        <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "period" })}>
+          <span className="settings-label">Last period date</span>
+          <span className="settings-value">{profile.lastPeriodDate || "—"}<span className="settings-arrow">›</span></span>
+        </div>
+        <div className="settings-row" style={{padding:'14px 18px'}}>
+          <span className="settings-label">Cycle length</span>
+          <span className="settings-value">{profile.cycleLength || 28} days</span>
+        </div>
+      </div>
+
+      <h3 className="h-section">Customize</h3>
+      <div className="card" style={{padding:0}}>
+        <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "editDrinks" })}>
+          <span className="settings-label">Drinks</span>
+          <span className="settings-value">{data.drinks.length} types<span className="settings-arrow">›</span></span>
+        </div>
+        <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "editSupps" })}>
+          <span className="settings-label">Supplement stack</span>
+          <span className="settings-value">{data.supplements.length} items<span className="settings-arrow">›</span></span>
+        </div>
+      </div>
+
+      <h3 className="h-section">Data</h3>
+      <div className="card" style={{padding:0}}>
+        <div className="settings-row" style={{padding:'14px 18px'}} onClick={() => setSheet({ type: "exportData" })}>
+          <span className="settings-label">Export my data</span>
+          <span className="settings-arrow">›</span>
+        </div>
+        <div className="settings-row" style={{padding:'14px 18px', color:'var(--rose)'}} onClick={reset}>
+          <span className="settings-label" style={{color:'var(--rose)'}}>Reset everything</span>
+          <span className="settings-arrow">›</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Day Meals ───────────────────────────────────────────────
+function DayMealsSheet({ day, data }) {
+  const meals = MEAL_PLAN[day];
+  return (
+    <>
+      <h2 className="sheet-title">{day} meals</h2>
+      <div className="sheet-sub">From the rotation</div>
+
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Lunch</div>
+        </div>
+        <div style={{fontStyle:'italic', fontSize:15, color:'var(--ink)'}}>{meals.lunch}</div>
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">Dinner</div>
+        </div>
+        <div style={{fontStyle:'italic', fontSize:15, color:'var(--ink)'}}>{meals.dinner}</div>
+      </div>
+
+      <p style={{fontSize:11, color:'var(--ink-faint)', textAlign:'center', fontStyle:'italic', margin:'14px 0'}}>
+        Full recipes in your iCloud Files
+      </p>
+    </>
+  );
+}
+
+// ─── Export Data ─────────────────────────────────────────────
+function ExportDataSheet({ data, showToast, setSheet }) {
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `the-fast-life-${todayKey()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Data exported.");
+  };
+
+  return (
+    <>
+      <h2 className="sheet-title">Export data</h2>
+      <div className="sheet-sub">JSON backup of everything</div>
+
+      <p className="carrie-line" style={{textAlign:'left', marginBottom:20, fontSize:13}}>
+        Your data lives in your browser. This downloads a backup file you can save somewhere safe — iCloud, email to yourself, anywhere.
+      </p>
+
+      <div className="footer-area" style={{paddingTop:0}}>
+        <button className="btn" onClick={exportJSON}>Download backup</button>
+      </div>
+    </>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<AppWithSheets />);
+</script>
+</body>
+</html>
